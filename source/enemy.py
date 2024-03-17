@@ -1,50 +1,58 @@
 # /source/enemy.py
 
 
-import math
-
 import arcade
 
-from .utils import ArcadePoint, Point
+from .utils.constants import HEALTH_HIGH, SPEED_MEDIUM, VARIABILITY
+from .utils.functions import atan2, cos, sin
+from .utils.types import ClassVar
+from .utils.vector import Vector
 
 
 class Enemy(arcade.Sprite):
-    def __init__(self, waypoints: list[ArcadePoint]) -> None:
-        super().__init__(":resources:images/topdown_tanks/tankBody_dark.png")
+    waypoints: ClassVar[tuple[Vector, ...]]
 
-        self.speed = 100
-
-        self.waypoints: list[Point] = [
-            Point(*waypoint) for waypoint in waypoints
-        ]
-        self.target: int = 1
-
-        self.position = self.waypoints[0].convert()
-
-    @property
-    def can_move(self) -> bool:
-        return self.target < len(self.waypoints)
-
-    def on_update(self, delta_time: float = 1 / 60) -> None:
-        if not self.can_move:
-            return
-
-        self.move(delta_time)
-        self.face_point(self.waypoints[self.target].convert())
-
-        if (
-            Point(*self.position).round(-1)
-            == self.waypoints[self.target].round()
-        ):
-            self.target += 1
-
-    def move(self, dt: float):
-        position: Point = Point(*self.position)
-        target: Point = self.waypoints[self.target]
-
-        angle: float = math.atan2(
-            target.x - position.x, target.y - position.y
+    def __init__(self, assets: str | None = None) -> None:
+        super().__init__(
+            ":resources:images/topdown_tanks/tankBody_dark.png"
+            if assets is None
+            else assets
         )
 
-        self.center_x += self.speed * math.sin(angle) * dt
-        self.center_y += self.speed * math.cos(angle) * dt
+        self.speed = SPEED_MEDIUM
+        self.health: int = HEALTH_HIGH
+
+        self.target: int = 1
+        self.position = self.waypoints[0].convert()
+
+    def move(self, dt: float) -> None:
+        position: Vector = Vector(*self.position)
+        target: Vector = self.waypoints[self.target]
+
+        angle: float = atan2(target.x - position.x, target.y - position.y)
+
+        self.center_x += self.speed * sin(angle) * dt
+        self.center_y += self.speed * cos(angle) * dt
+
+    def update_target(self):
+        position: Vector = Vector(*self.position)
+        target: Vector = self.waypoints[self.target]
+
+        if target - VARIABILITY < position < target + VARIABILITY:
+            self.target += 1
+
+    def on_update(self, delta_time: float = 1 / 60) -> None:
+        # Check alive
+        if self.health <= 0:
+            self.kill()
+            return
+
+        # Move
+        self.face_point(self.waypoints[self.target].convert())
+        self.move(delta_time)
+        self.update_target()
+
+        # Check reached end
+        if self.target >= len(self.waypoints):
+            self.kill()
+            return

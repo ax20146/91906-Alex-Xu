@@ -1,0 +1,41 @@
+# /utils/constants.py
+
+
+# Define Screen Constants
+SCREEN_SIZE = (1280, 720)
+SCREEN_WIDTH = SCREEN_SIZE[0]
+SCREEN_HEIGHT = SCREEN_SIZE[1]
+
+
+# Define Health Constants
+HEALTH_LOW = 80
+HEALTH_MEDIUM = 100
+HEALTH_HIGH = 120
+
+
+# Define Speed Constants
+SPEED_SLOW = 50
+SPEED_MEDIUM = 100
+SPEED_FAST = 150
+
+
+# Define Range Constants
+RANGE_SHORT = 100
+RANGE_MEDIUM = 300
+RANGE_FAR = 500
+
+
+# Define Damage Constants
+DAMAGE_LOW = 20
+DAMAGE_MEDIUM = 50
+DAMAGE_HIGH = 100
+
+
+# Define Cooldown Constants
+COOLDOWN_SHORT = 500
+COOLDOWN_MEDIUM = 800
+COOLDOWN_LONG = 1000
+
+
+# Other Constants
+VARIABILITY = 2
