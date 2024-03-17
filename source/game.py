@@ -2,6 +2,8 @@
 
 import arcade
 
+from .enemy import Enemy
+
 
 class Game(arcade.View):
     def __init__(self) -> None:
@@ -11,6 +13,13 @@ class Game(arcade.View):
 
     def on_show_view(self) -> None:
         self.scene = arcade.Scene()
+
+        self.scene.add_sprite(
+            "Enemy",
+            Enemy(
+                [(100, 100), (200, 100), (300, 300), (500, 100), (700, 200)]
+            ),
+        )
 
     def on_draw(self) -> None:
         self.clear()
