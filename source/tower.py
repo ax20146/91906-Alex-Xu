@@ -6,17 +6,16 @@ import arcade
 from .enemy import Enemy
 from .utils.constants import COOLDOWN_MEDIUM, DAMAGE_MEDIUM, RANGE_MEDIUM
 from .utils.types import ClassVar
+from .utils.vector import VectorTuple
 
 
 class Tower(arcade.Sprite):
     targets: ClassVar[arcade.SpriteList]
 
-    def __init__(self, assets: str | None = None) -> None:
-        super().__init__(
-            ":resources:images/topdown_tanks/tankBody_dark.png"
-            if assets is None
-            else assets
-        )
+    def __init__(self, position: VectorTuple, assets: str = "") -> None:
+        super().__init__(assets or "./assets/towers/rocket.png")
+
+        self.position = position
 
         self.target: Enemy | None = None
 

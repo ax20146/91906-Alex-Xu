@@ -2,9 +2,10 @@
 
 import arcade
 
+from .clock import Clock
 from .enemy import Enemy
 from .tower import Tower
-from .vector import Vector
+from .utils.vector import Vector
 
 
 class Game(arcade.View):
@@ -14,29 +15,25 @@ class Game(arcade.View):
         self.scene: arcade.Scene
 
         self.health: int
-        self.waypoint: tuple[Vector, ...]
+        self.clock = Clock()
 
     def on_show_view(self) -> None:
-        self.scene = arcade.Scene()
-
-        Enemy.waypoints = tuple(
-            Vector(*point)
-            for point in [
-                (100, 100),
-                (200, 100),
-                (300, 300),
-                (500, 100),
-                (700, 200),
-            ]
+        self.scene = arcade.Scene.from_tilemap(
+            arcade.load_tilemap("./maps/map1.tmx")
         )
 
-        tower = Tower()
-        tower.position = 300, 400
+        Enemy.waypoints = tuple(
+            Vector(*waypoint.position)
+            for waypoint in sorted(
+                self.scene.get_sprite_list("Waypoints"),
+                key=lambda sprite: sprite.properties["order"],
+            )
+        )
 
-        self.scene.add_sprite("Tower", tower)
         self.scene.add_sprite("Enemy", Enemy())
         e = Enemy()
         e.speed = 200
+        e.health = 1000
 
         self.scene.add_sprite("Enemy", e)
 
@@ -45,7 +42,16 @@ class Game(arcade.View):
 
         self.scene.draw()  # type: ignore
 
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        if info := arcade.get_sprites_at_point((x, y), self.scene["Slots"]):
+            slot: arcade.Sprite = info[-1]
+            self.scene.add_sprite(
+                "Tower", Tower((slot.center_x, slot.center_y))
+            )
+
     def on_update(self, delta_time: float) -> None:
+        self.clock.update(delta_time)
+
         Tower.targets = self.scene.get_sprite_list("Enemy")
 
         self.scene.on_update(delta_time)
