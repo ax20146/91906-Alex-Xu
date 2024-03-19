@@ -4,7 +4,7 @@
 from arcade import Window
 
 from .game import Game
-from .utils.constants import SCREEN_SIZE
+from .utils import SCREEN_SIZE
 
 
 def create_window() -> Window:
