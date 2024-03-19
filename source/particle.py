@@ -8,10 +8,15 @@ from .utils import Sprite, VectorTuple
 
 class Particle(Sprite):
     def __init__(
-        self, filename: str, rotation: float, position: VectorTuple
+        self,
+        filename: str,
+        rotation: float,
+        position: VectorTuple,
     ) -> None:
         super().__init__(
-            filename=filename, rotation=rotation, position=position
+            filename=filename,
+            rotation=rotation,
+            position=position,
         )
 
         self.life_time: int = 100

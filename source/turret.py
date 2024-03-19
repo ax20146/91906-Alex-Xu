@@ -11,7 +11,7 @@ from .particle import Fire
 from .utils import Sprite, VectorTuple
 
 
-class Turret(Sprite, ABC):
+class TurretEntity(Sprite, ABC):
     targets: ClassVar[arcade.SpriteList]
     particles: ClassVar[arcade.SpriteList]
 
@@ -54,7 +54,6 @@ class Turret(Sprite, ABC):
             return
 
         self.target = target
-
         self.face_point(self.target.position)
 
         if self.can_attack():
@@ -66,7 +65,7 @@ class Turret(Sprite, ABC):
         raise NotImplementedError
 
 
-class Canon(Turret):
+class Canon(TurretEntity):
     def __init__(self, position: VectorTuple) -> None:
         super().__init__(
             "./assets/towers/canon.png",
