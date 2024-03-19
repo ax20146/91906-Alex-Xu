@@ -1,11 +1,10 @@
-# /particle.py
-
-
+# Import Dependencies
 from math import cos, sin
 
-from .utils import Sprite, VectorTuple
+from ..utils import Sprite, VectorTuple
 
 
+# Define Particle Class
 class Particle(Sprite):
     def __init__(
         self,
@@ -14,16 +13,15 @@ class Particle(Sprite):
         position: VectorTuple,
     ) -> None:
         super().__init__(
-            filename=filename,
+            filename,
             rotation=rotation,
             position=position,
         )
 
-        self.life_time: int = 100
-        self.created_time: float = self.clock.now()
+        self.born_time: float = self.clock.now()
         self.place()
 
-    def place(self):
+    def place(self) -> None:
         length: float = self.height // 1.5
         angle: float = self.radians
 
@@ -31,14 +29,5 @@ class Particle(Sprite):
         self.center_y += length * cos(angle)
 
     def on_update(self, dt: float) -> None:
-        if self.clock.now() - self.created_time >= self.life_time:
+        if self.clock.now() - self.born_time >= 100:
             self.kill()
-
-
-class Fire(Particle):
-    def __init__(self, rotation: float, position: VectorTuple) -> None:
-        super().__init__(
-            "./assets/particles/turret_fire.png",
-            rotation,
-            position,
-        )

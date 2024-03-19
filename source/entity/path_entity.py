@@ -1,10 +1,9 @@
-# entity.py
-
+# Import Dependencies
 from abc import ABC, abstractmethod
 from math import atan2, cos, sin
 from typing import ClassVar
 
-from .utils import Sprite, Vector
+from ..utils import Sprite, Vector
 
 
 class PathEntity(Sprite, ABC):
@@ -17,49 +16,49 @@ class PathEntity(Sprite, ABC):
         health: int,
     ) -> None:
         super().__init__(
-            filename=filename,
+            filename,
             position=self.waypoints[0].convert(),
         )
 
         self.speed: int = speed
         self.health: int = health
 
-        self.target: int = 0
+        self.target: int = 1
 
-    def move(self, dt: float) -> None:
+    def is_dead(self) -> bool:
+        return self.health <= 0
+
+    def move(self, dt: float):
         position: Vector = Vector(*self.position)
         target: Vector = self.waypoints[self.target]
 
-        angle: float = atan2(target.x - position.x, target.y - position.y)
+        angle: float = -atan2(target.x - position.x, target.y - position.y)
 
-        self.center_x += self.speed * sin(angle) * dt
+        self.center_x -= self.speed * sin(angle) * dt
         self.center_y += self.speed * cos(angle) * dt
 
-    def select_target(self) -> None:
+    def toward_target(self) -> None:
+        self.face_point(self.waypoints[self.target].convert())
+
+    def update_target(self) -> None:
         position: Vector = Vector(*self.position)
         target: Vector = self.waypoints[self.target]
 
-        if target - 3 < position < target + 3:
+        if round(position) == target:
             self.target += 1
 
-    def dead(self) -> bool:
-        if self.health > 0:
-            return False
-
-        self.kill()
-        return True
-
     def on_update(self, dt: float) -> None:
-        if self.dead():
+        if self.is_dead():
+            self.kill()
             return
 
-        self.face_point(self.waypoints[self.target].convert())
         self.move(dt)
-        self.select_target()
+        self.toward_target()
+        self.update_target()
 
         if self.target >= len(self.waypoints):
-            self.attack()
+            self.on_end()
 
     @abstractmethod
-    def attack(self) -> None:
+    def on_end(self) -> None:
         raise NotImplementedError

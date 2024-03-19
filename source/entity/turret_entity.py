@@ -1,14 +1,10 @@
-# /turret.py
-
-
+# Import Dependencies
 from abc import ABC, abstractmethod
 from typing import ClassVar
 
 import arcade
 
-from .enemy import Enemy
-from .particle import Fire
-from .utils import Sprite, VectorTuple
+from ..utils import Sprite, VectorTuple
 
 
 class TurretEntity(Sprite, ABC):
@@ -24,7 +20,7 @@ class TurretEntity(Sprite, ABC):
         cooldown: int,
     ) -> None:
         super().__init__(
-            filename=filename,
+            filename,
             position=position,
         )
 
@@ -34,17 +30,17 @@ class TurretEntity(Sprite, ABC):
         self.last_attack: float = 0
         self.cooldown: int = cooldown
 
-        self.target: Enemy
+        self.target: Sprite
 
     def can_attack(self) -> bool:
         return self.clock.now() - self.last_attack >= self.cooldown
 
-    def select_target(self) -> Enemy | None:
+    def select_target(self) -> Sprite | None:
         if (data := arcade.get_closest_sprite(self, self.targets)) is None:
             return
 
         sprite, distance = data
-        if not isinstance(sprite, Enemy) or distance > self.range:
+        if not isinstance(sprite, Sprite) or distance > self.range:
             return
 
         return sprite
@@ -63,21 +59,3 @@ class TurretEntity(Sprite, ABC):
     @abstractmethod
     def attack(self) -> None:
         raise NotImplementedError
-
-
-class Canon(TurretEntity):
-    def __init__(self, position: VectorTuple) -> None:
-        super().__init__(
-            "./assets/towers/canon.png",
-            position,
-            damage=50,
-            range=5 * 64,
-            cooldown=1000,
-        )
-
-    def attack(self) -> None:
-        self.target.health -= self.damage
-
-        self.particles.append(
-            Fire(self.angle, (self.center_x, self.center_y))
-        )

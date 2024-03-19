@@ -9,14 +9,16 @@ from typing import ClassVar
 import arcade
 
 # Define Constants
-SCREEN_SIZE = (1280, 960)
+TILE_SIZE = 64
+SCREEN_SIZE = (15 * TILE_SIZE, 10 * TILE_SIZE)
 SCREEN_WIDTH = SCREEN_SIZE[0]
 SCREEN_HEIGHT = SCREEN_SIZE[1]
 
 # Layer
-LAYER_MAP = "Map"
+LAYER_TILES = "Tiles"
 LAYER_SLOTS = "Slots"
 LAYER_WAYPOINTS = "Waypoints"
+LAYER_DECORATION = "Decorations"
 
 
 # Define Types
@@ -68,29 +70,8 @@ class Vector:
 
         return self.x == __value.x and self.y == __value.y
 
-    def __gt__(self, __value: "Vector") -> bool:
-        return self.x > __value.x and self.y > __value.y
-
-    def __lt__(self, __value: "Vector") -> bool:
-        return self.x < __value.x and self.y < __value.y
-
-    def __add__(self, __value: "Vector | VectorTuple | float") -> "Vector":
-        if isinstance(__value, tuple):
-            return self.__class__(self.x + __value[0], self.y + __value[1])
-
-        if isinstance(__value, (int, float)):
-            return self.__class__(self.x + __value, self.y + __value)
-
-        return self.__class__(self.x + __value.x, self.y + __value.y)
-
-    def __sub__(self, __value: "Vector | VectorTuple | float") -> "Vector":
-        if isinstance(__value, tuple):
-            return self.__class__(self.x - __value[0], self.y - __value[1])
-
-        if isinstance(__value, (int, float)):
-            return self.__class__(self.x - __value, self.y - __value)
-
-        return self.__class__(self.x - __value.x, self.y - __value.y)
+    def __round__(self) -> "Vector":
+        return self.__class__(round(self.x), round(self.y))
 
     def __repr__(self) -> str:
         return f"{self.__class__}({self.x}, {self.y})"
