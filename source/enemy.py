@@ -1,58 +1,65 @@
-# /source/enemy.py
-
+from typing import ClassVar
 
 import arcade
 
-from .utils.constants import HEALTH_HIGH, SPEED_MEDIUM, VARIABILITY
-from .utils.functions import atan2, cos, sin
-from .utils.types import ClassVar
-from .utils.vector import Vector
+from .coins import Gold
+from .entity import PathEntity
+from .utils import Health, Speed
 
 
-class Enemy(arcade.Sprite):
-    waypoints: ClassVar[tuple[Vector, ...]]
+class Enemy(PathEntity):
+    coin_list: ClassVar[arcade.SpriteList]
+    health: int
 
-    def __init__(self, assets: str | None = None) -> None:
+    def on_die(self) -> None:
+        self.kill()
+        self.coin_list.append(Gold((self.center_x, self.center_y)))
+
+    def on_end(self) -> None:
+        self.kill()
+        Enemy.health -= 1
+
+
+class Soldier(Enemy):
+    def __init__(self) -> None:
         super().__init__(
-            ":resources:images/topdown_tanks/tankBody_dark.png"
-            if assets is None
-            else assets
+            filename="./assets/Entity/Troops/Soldier.png",
+            speed=Speed.MEDIUM.value,
+            health=Health.LOW.value,
         )
 
-        self.speed = SPEED_MEDIUM
-        self.health: int = HEALTH_HIGH
 
-        self.target: int = 1
-        self.position = self.waypoints[0].convert()
+class Robot(Enemy):
+    def __init__(self) -> None:
+        super().__init__(
+            filename="./assets/Entity/Troops/Robot.png",
+            speed=Speed.MEDIUM.value,
+            health=Health.HIGH.value,
+        )
 
-    def move(self, dt: float) -> None:
-        position: Vector = Vector(*self.position)
-        target: Vector = self.waypoints[self.target]
 
-        angle: float = atan2(target.x - position.x, target.y - position.y)
+class Truck(Enemy):
+    def __init__(self) -> None:
+        super().__init__(
+            filename="./assets/Entity/Tanks/TankSmall.png",
+            speed=Speed.FAST.value,
+            health=Health.HIGH.value,
+        )
 
-        self.center_x += self.speed * sin(angle) * dt
-        self.center_y += self.speed * cos(angle) * dt
 
-    def update_target(self):
-        position: Vector = Vector(*self.position)
-        target: Vector = self.waypoints[self.target]
+class Zombie(Enemy):
+    def __init__(self) -> None:
+        super().__init__(
+            filename="./assets/Entity/Troops/Zombie.png",
+            speed=Speed.FAST.value,
+            health=Health.LOW.value,
+        )
 
-        if target - VARIABILITY < position < target + VARIABILITY:
-            self.target += 1
 
-    def on_update(self, delta_time: float = 1 / 60) -> None:
-        # Check alive
-        if self.health <= 0:
-            self.kill()
-            return
-
-        # Move
-        self.face_point(self.waypoints[self.target].convert())
-        self.move(delta_time)
-        self.update_target()
-
-        # Check reached end
-        if self.target >= len(self.waypoints):
-            self.kill()
-            return
+class Knight(Enemy):
+    def __init__(self) -> None:
+        super().__init__(
+            filename="./assets/Entity/Troops/Knight.png",
+            speed=Speed.SLOW.value,
+            health=Health.HIGH.value,
+        )

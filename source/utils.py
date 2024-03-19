@@ -3,6 +3,8 @@
 
 # Import Built-in Dependencies
 from abc import ABC, abstractmethod
+from enum import Enum
+from random import randint
 from typing import ClassVar
 
 # Import 3rd-Party Dependencies
@@ -23,6 +25,27 @@ LAYER_DECORATION = "Decorations"
 
 # Define Types
 VectorTuple = tuple[float, float]
+
+
+def randrange(value: float, range: int) -> int:
+    return randint(round(value) - range, round(value) + range)
+
+
+class Duration(Enum):
+    MEDIUM = 5000
+    SHORT = 50
+
+
+class Speed(Enum):
+    SLOW = 100
+    MEDIUM = 150
+    FAST = 200
+
+
+class Health(Enum):
+    LOW = 100
+    MEDIUM = 250
+    HIGH = 500
 
 
 class Clock:
@@ -52,6 +75,14 @@ class Sprite(arcade.Sprite, ABC):
             center_y=position[1],
         )
 
+    @property
+    def x(self) -> float:
+        return self.center_x
+
+    @property
+    def y(self) -> float:
+        return self.center_y
+
     @abstractmethod
     def on_update(self, dt: float) -> None:  # type: ignore
         raise NotImplementedError
@@ -70,11 +101,29 @@ class Vector:
 
         return self.x == __value.x and self.y == __value.y
 
-    def __round__(self) -> "Vector":
-        return self.__class__(round(self.x), round(self.y))
+    def __gt__(self, __value: "Vector") -> bool:
+        return self.x > __value.x and self.y > __value.y
+
+    def __lt__(self, __value: "Vector") -> bool:
+        return self.x < __value.x and self.y < __value.y
+
+    def __add__(self, __value: "Vector | float") -> "Vector":
+        if isinstance(__value, (int, float)):
+            return self.__class__(self.x + __value, self.y + __value)
+
+        return self.__class__(self.x + __value.x, self.y + __value.y)
+
+    def __sub__(self, __value: "Vector | float") -> "Vector":
+        if isinstance(__value, (int, float)):
+            return self.__class__(self.x - __value, self.y - __value)
+
+        return self.__class__(self.x - __value.x, self.y - __value.y)
 
     def __repr__(self) -> str:
-        return f"{self.__class__}({self.x}, {self.y})"
+        return f"Vector({self.x}, {self.y})"
+
+    def within(self, __value: "Vector", /, *, range: int = 0) -> bool:
+        return __value - range < self < __value + range
 
     def convert(self) -> VectorTuple:
         return (self.x, self.y)

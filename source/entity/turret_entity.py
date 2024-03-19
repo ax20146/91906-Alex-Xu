@@ -5,6 +5,7 @@ from typing import ClassVar
 import arcade
 
 from ..utils import Sprite, VectorTuple
+from . import PathEntity
 
 
 class TurretEntity(Sprite, ABC):
@@ -30,17 +31,17 @@ class TurretEntity(Sprite, ABC):
         self.last_attack: float = 0
         self.cooldown: int = cooldown
 
-        self.target: Sprite
+        self.target: PathEntity
 
     def can_attack(self) -> bool:
         return self.clock.now() - self.last_attack >= self.cooldown
 
-    def select_target(self) -> Sprite | None:
+    def select_target(self) -> PathEntity | None:
         if (data := arcade.get_closest_sprite(self, self.targets)) is None:
             return
 
         sprite, distance = data
-        if not isinstance(sprite, Sprite) or distance > self.range:
+        if not isinstance(sprite, PathEntity) or distance > self.range:
             return
 
         return sprite

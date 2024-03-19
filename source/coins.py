@@ -1,7 +1,6 @@
-from random import randint
 from typing import ClassVar
 
-from .utils import Sprite, VectorTuple
+from .utils import TILE_SIZE, Sprite, VectorTuple, randrange
 
 
 class Coin(Sprite):
@@ -16,8 +15,10 @@ class Coin(Sprite):
     ) -> None:
         super().__init__(
             filename,
-            rotation=randint(1, 360),
-            position=position,
+            position=(
+                randrange(position[0], TILE_SIZE // 2),
+                randrange(position[1], TILE_SIZE // 2),
+            ),
         )
 
         self.value: int = value

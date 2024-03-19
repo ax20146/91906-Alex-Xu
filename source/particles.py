@@ -1,7 +1,7 @@
 # Import Dependencies
 from math import cos, sin
 
-from ..utils import Sprite, VectorTuple
+from .utils import Sprite, VectorTuple
 
 
 # Define Particle Class
@@ -31,3 +31,21 @@ class Particle(Sprite):
     def on_update(self, dt: float) -> None:
         if self.clock.now() - self.born_time >= 100:
             self.kill()
+
+
+class Fire(Particle):
+    def __init__(self, rotation: float, position: VectorTuple) -> None:
+        super().__init__(
+            filename="./assets/Particles/FlameBig.png",
+            rotation=rotation,
+            position=position,
+        )
+
+
+class Flame(Particle):
+    def __init__(self, rotation: float, position: VectorTuple) -> None:
+        super().__init__(
+            filename="./assets/Particles/FlameSmall.png",
+            rotation=rotation,
+            position=position,
+        )

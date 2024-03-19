@@ -44,12 +44,12 @@ class PathEntity(Sprite, ABC):
         position: Vector = Vector(*self.position)
         target: Vector = self.waypoints[self.target]
 
-        if round(position) == target:
+        if position.within(target, range=3):
             self.target += 1
 
     def on_update(self, dt: float) -> None:
         if self.is_dead():
-            self.kill()
+            self.on_die()
             return
 
         self.move(dt)
@@ -58,6 +58,10 @@ class PathEntity(Sprite, ABC):
 
         if self.target >= len(self.waypoints):
             self.on_end()
+
+    @abstractmethod
+    def on_die(self) -> None:
+        raise NotImplementedError
 
     @abstractmethod
     def on_end(self) -> None:
