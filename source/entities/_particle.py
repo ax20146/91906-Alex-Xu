@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Any
 
 from ..utils import Sprite, Timer, TuplePoint
 
@@ -23,7 +22,7 @@ class Particle(Sprite):
 
         self.initialize()
 
-    def on_update(self, dt: float, **kwargs: Any) -> None:
+    def on_update(self, dt: float) -> None:
         if self.timer.available():
             self.timer.update()
             self.kill()

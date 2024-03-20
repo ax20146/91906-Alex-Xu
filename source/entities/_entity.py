@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from math import atan2, cos, sin
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import arcade
 
@@ -45,7 +45,7 @@ class PathEntity(Sprite, ABC):
         if position.within(target, range=3):
             self.target += 1
 
-    def on_update(self, dt: float, **kwargs: Any) -> None:
+    def on_update(self, dt: float) -> None:
         if self.health <= 0:
             return self.on_die()
 
@@ -66,6 +66,7 @@ class PathEntity(Sprite, ABC):
 
 
 class TurretEntity(Sprite, ABC):
+    targets: ClassVar[arcade.SpriteList]
     particles: ClassVar[arcade.SpriteList]
 
     def __init__(
@@ -90,8 +91,8 @@ class TurretEntity(Sprite, ABC):
 
         self.target: PathEntity
 
-    def update_target(self, targets: arcade.SpriteList) -> PathEntity | None:
-        if (data := arcade.get_closest_sprite(self, targets)) is None:
+    def update_target(self) -> PathEntity | None:
+        if (data := arcade.get_closest_sprite(self, self.targets)) is None:
             return
 
         sprite, distance = data
@@ -100,8 +101,8 @@ class TurretEntity(Sprite, ABC):
 
         return sprite
 
-    def on_update(self, dt: float, targets: arcade.SpriteList) -> None:  # type: ignore
-        if (target := self.update_target(targets)) is None:
+    def on_update(self, dt: float) -> None:
+        if (target := self.update_target()) is None:
             return
         self.target = target
 

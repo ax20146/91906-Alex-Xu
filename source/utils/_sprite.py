@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import arcade
 
@@ -48,5 +48,5 @@ class Sprite(arcade.Sprite, ABC):
         self.center_y = __value[1]
 
     @abstractmethod
-    def on_update(self, dt: float, **kwargs: Any) -> None:  # type: ignore
+    def on_update(self, dt: float) -> None:  # type: ignore
         raise NotImplementedError
