@@ -9,7 +9,7 @@ from .enemies import Enemy, Knight, Robot, Soldier, Truck, Zombie
 from .entities import Particle
 from .slots import Slot
 from .tank import Tank, TankCanon
-from .towers import Canon, MachineGun, Tower
+from .towers import Canon, MachineGun, Rocket, RocketLauncher, Tower
 from .utils import Clock, Point, Sprite, Timer
 from .utils.constants import Screen
 
@@ -88,15 +88,16 @@ class Game(arcade.View):
         self.scene.remove_sprite_list_by_name("Waypoints")
 
         self.scene.add_sprite_list("Coins")
-        self.scene.add_sprite_list("Particles")
-        self.scene.add_sprite_list("Enemies")
         self.scene.add_sprite_list("Towers")
+        self.scene.add_sprite_list("Enemies")
+        self.scene.add_sprite_list("Particles")
 
         Sprite.clock = self.clock
         Tower.lst = self.scene["Towers"]
         Coin.lst = self.scene["Coins"]
         Particle.lst = self.scene["Particles"]
         Enemy.health = self.health
+        Rocket.lst = self.scene["Particles"]
 
     def on_draw(self) -> None:
         self.clear()
@@ -148,8 +149,9 @@ class Game(arcade.View):
                 rand_choice((Soldier, Zombie, Robot, Knight, Truck, Tank))(),
             )
 
-        TankCanon.targets = self.scene.get_sprite_list("Slots")
         Tower.targets = self.scene.get_sprite_list("Enemies")
+        Rocket.targets = self.scene.get_sprite_list("Enemies")
+        TankCanon.targets = self.scene.get_sprite_list("Slots")
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if data := arcade.get_sprites_at_point((x, y), self.scene["Enemies"]):
@@ -160,17 +162,22 @@ class Game(arcade.View):
             data := arcade.get_sprites_at_point((x, y), self.scene["Slots"])
         ) and not self.select:
             slot: Slot = data[-1]  # type: ignore
-            self.select = slot
 
-            if button == arcade.MOUSE_BUTTON_LEFT:
+            if button == arcade.MOUSE_BUTTON_LEFT and not slot.turret:
                 tower = Canon(slot.position)
+            elif button == arcade.MOUSE_BUTTON_MIDDLE and not slot.turret:
+                tower = RocketLauncher(slot.position)
+            elif button == arcade.MOUSE_BUTTON_RIGHT and not slot.turret:
+                tower = MachineGun(slot.position)
             elif button == arcade.MOUSE_BUTTON_RIGHT and slot.turret:
-                slot.turret.kill()
                 self.coin += slot.turret.price // 2
+                slot.turret.kill()
                 slot.turret = None
+                self.select = None
                 return
             else:
-                tower = MachineGun(slot.position)
+                self.select = slot
+                return
 
             if slot.turret or self.coin - tower.price < 0:
                 tower.kill()
