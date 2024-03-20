@@ -1,16 +1,21 @@
-from typing import ClassVar
+from random import randint
+from typing import final
 
-from .utils import TILE_SIZE, Sprite, VectorTuple, randrange
+from .entities import Particle
+from .utils import TuplePoint
+from .utils.constants import TILE_SIZE, Duration, Value
 
 
-class Coin(Sprite):
-    amount: ClassVar[int]
+def randrange(value: float, range: int) -> int:
+    return randint(round(value) - range, round(value) + range)
 
+
+class Coin(Particle):
     def __init__(
         self,
         filename: str,
-        position: VectorTuple,
         *,
+        position: TuplePoint,
         value: int,
     ) -> None:
         super().__init__(
@@ -19,34 +24,34 @@ class Coin(Sprite):
                 randrange(position[0], TILE_SIZE // 2),
                 randrange(position[1], TILE_SIZE // 2),
             ),
+            delay=Duration.LONGER,
         )
 
         self.value: int = value
-        self.duration: int = 5000
-        self.created: float = self.clock.now()
 
-    def on_collect(self) -> None:
+    def on_collect(self, amount: int) -> int:
         self.kill()
-        Coin.amount += self.value
-
-    def on_update(self, dt: float) -> None:
-        if self.clock.now() - self.created >= self.duration:
-            self.kill()
+        return amount + self.value
 
 
+@final
 class Gold(Coin):
-    def __init__(self, position: VectorTuple) -> None:
+    def __init__(self, position: TuplePoint) -> None:
         super().__init__(
             "./assets/Entity/Coins/Gold.png",
-            position,
-            value=50,
+            position=position,
+            value=Value.HIGH,
         )
 
 
+@final
 class Bronze(Coin):
-    def __init__(self, position: VectorTuple) -> None:
+    def __init__(self, position: TuplePoint) -> None:
         super().__init__(
             "./assets/Entity/Coins/Bronze.png",
-            position,
-            value=20,
+            position=position,
+            value=Value.LOW,
         )
+
+
+Coins = type[Bronze | Gold]

@@ -1,15 +1,15 @@
-from abc import abstractmethod
-
-from ..utils import Sprite, Timer, TuplePoint
+from ..utils import ClassSpriteList, Sprite, Timer, TuplePoint
 
 
 class Particle(Sprite):
+    lst: ClassSpriteList
+
     def __init__(
         self,
         filename: str,
-        rotation: float,
-        position: TuplePoint,
         *,
+        rotation: float = 0,
+        position: TuplePoint = (0, 0),
         delay: int = 0,
     ) -> None:
         super().__init__(
@@ -17,22 +17,10 @@ class Particle(Sprite):
             rotation=rotation,
             position=position,
         )
-        if delay:
-            self.timer: Timer = Timer(delay, self.clock)
 
-        self.initialize()
+        self.lst.append(self)
+        self.timer: Timer = Timer(delay, self.clock)
 
     def on_update(self, dt: float) -> None:
         if self.timer.available():
-            self.timer.update()
             self.kill()
-
-        self.update()
-
-    @abstractmethod
-    def initialize(self) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def update(self) -> None:
-        raise NotImplementedError

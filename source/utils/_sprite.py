@@ -50,3 +50,7 @@ class Sprite(arcade.Sprite, ABC):
     @abstractmethod
     def on_update(self, dt: float) -> None:  # type: ignore
         raise NotImplementedError
+
+
+SpriteList = arcade.SpriteList
+ClassSpriteList = ClassVar[SpriteList]

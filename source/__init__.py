@@ -3,13 +3,13 @@
 
 from arcade import Window
 
-from .game import MenuView
-from .utils import SCREEN_SIZE
+from .game import Game
+from .utils.constants import Screen
 
 
 def create_window() -> Window:
-    window: Window = Window(*SCREEN_SIZE)  # type: ignore
-    window.show_view(MenuView())
+    window: Window = Window(*Screen.SIZE)  # type: ignore
+    window.show_view(Game())
 
     return window
 

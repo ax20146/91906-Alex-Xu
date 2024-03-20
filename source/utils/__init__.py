@@ -1,5 +1,5 @@
-from . import classes, constants, functions
-from ._sprite import Sprite
+from . import classes, constants
+from ._sprite import ClassSpriteList, Sprite, SpriteList
 from .classes import Clock, Point, Timer, TuplePoint
 
 __all__: list[str] = [
@@ -8,7 +8,8 @@ __all__: list[str] = [
     "Point",
     "TuplePoint",
     "Sprite",
+    "SpriteList",
+    "ClassSpriteList",
     "classes",
-    "functions",
     "constants",
 ]

@@ -47,6 +47,7 @@ class PathEntity(Sprite, ABC):
 
     def on_update(self, dt: float) -> None:
         if self.health <= 0:
+            self.kill()
             return self.on_die()
 
         self.move(dt)
@@ -54,20 +55,15 @@ class PathEntity(Sprite, ABC):
         self.update_target()
 
         if self.target >= len(self.waypoints):
-            return self.on_die()
+            self.kill()
 
     @abstractmethod
     def on_die(self) -> None:
         raise NotImplementedError
 
-    @abstractmethod
-    def on_end(self) -> None:
-        raise NotImplementedError
-
 
 class TurretEntity(Sprite, ABC):
     targets: ClassVar[arcade.SpriteList]
-    particles: ClassVar[arcade.SpriteList]
 
     def __init__(
         self,

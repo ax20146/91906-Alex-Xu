@@ -23,16 +23,50 @@ class Layer:
     TOWER = "Towers"
 
 
-class Duration: ...
+class Duration:
+    SHORTEST = 50
+    SHORTER = 150
+    SHORT = 1000
+    LONG = 2000
+    LONGER = 5000
+    LONGEST = 8000
 
 
-class Speed: ...
+class Speed:
+    SLOW = 30
+    MEDIUM = 50
+    FAST = 80
 
 
-class Health: ...
+class Health:
+    LOW = 10
+    MEDIUM = 20
+    HIGH = 50
 
 
-class Damage: ...
+class Damage:
+    LOW = 5
+    MEDIUM = 20
+    HIGH = 30
 
 
-class Range: ...
+class Range:
+    SHORT = 3 * TILE_SIZE
+    FAR = 5 * TILE_SIZE
+
+
+class Cooldown:
+    SHORT = 150
+    MEDIUM = 1000
+    LONG = 2000
+
+
+class Price:
+    LOW = 25
+    MEDIUM = 50
+    HIGH = 80
+
+
+class Value:
+    LOW = 5
+    HIGH = 20
