@@ -6,6 +6,8 @@ from .utils.constants import Health, Speed
 
 
 class Enemy(PathEntity):
+    health: int
+
     def __init__(
         self,
         filename: str,
@@ -26,7 +28,7 @@ class Enemy(PathEntity):
             self.coin[0](self.position)
 
     def on_end(self) -> None:
-        return
+        Enemy.health -= 1
 
 
 @final

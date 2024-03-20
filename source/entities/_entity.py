@@ -45,6 +45,18 @@ class PathEntity(Sprite, ABC):
         if position.within(target, range=3):
             self.target += 1
 
+    def on_select(self) -> None:
+        self.draw_hit_box(line_thickness=2)
+        arcade.draw_text(
+            f"Heath: {self.health if self.health > 0 else 0}",
+            self.x,
+            self.y + 40,
+            width=100,
+            align="center",
+            anchor_x="center",
+            anchor_y="center",
+        )
+
     def on_update(self, dt: float) -> None:
         if self.health <= 0:
             self.kill()
@@ -56,9 +68,14 @@ class PathEntity(Sprite, ABC):
 
         if self.target >= len(self.waypoints):
             self.kill()
+            self.on_end()
 
     @abstractmethod
     def on_die(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def on_end(self) -> None:
         raise NotImplementedError
 
 

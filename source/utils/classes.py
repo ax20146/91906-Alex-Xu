@@ -58,7 +58,7 @@ class Point:
         return self.__class__(self.x - __value.x, self.y - __value.y)
 
     def __repr__(self) -> str:
-        return f"Point({self.x}, {self.y})"
+        return f"{self.__class__.__name__}({self.x}, {self.y})"
 
     def within(self, __value: "Point", /, *, range: int = 0) -> bool:
         return __value - range < self < __value + range

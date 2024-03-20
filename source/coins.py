@@ -21,8 +21,8 @@ class Coin(Particle):
         super().__init__(
             filename,
             position=(
-                randrange(position[0], TILE_SIZE // 2),
-                randrange(position[1], TILE_SIZE // 2),
+                randrange(position[0], TILE_SIZE),
+                randrange(position[1], TILE_SIZE),
             ),
             delay=Duration.LONGER,
         )

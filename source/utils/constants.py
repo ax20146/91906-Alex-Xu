@@ -33,21 +33,21 @@ class Duration:
 
 
 class Speed:
-    SLOW = 30
-    MEDIUM = 50
-    FAST = 80
+    SLOW = 50
+    MEDIUM = 100
+    FAST = 150
 
 
 class Health:
-    LOW = 10
-    MEDIUM = 20
-    HIGH = 50
+    LOW = 20
+    MEDIUM = 50
+    HIGH = 80
 
 
 class Damage:
-    LOW = 5
-    MEDIUM = 20
-    HIGH = 30
+    LOW = 2
+    MEDIUM = 25
+    HIGH = 40
 
 
 class Range:
