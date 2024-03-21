@@ -7,4 +7,4 @@
 | 21/03 | Jakob        | - Try to improves the graphics, overall they aren't bad.<br>- More diversity in damage dealt to base by different enemies.       |         |
 | 21/03 | Ethan        | - Somehow make the tower placements more accessible.<br>- Have option with tower's targets.<br>- Overall good and simple design. |         |
 | 21/03 | Christian    | - No instruction which makes the game very unclear.                                                                              |         |
-| 21/03 | Jason        | - Make coin collection have magnetic effect.<br>- Make the coins spawn in a large area.<br>- Randomness with coins.              |         |
+| 21/03 | Jason        | - Make coin collection have magnetic effect.<br>- Make the coins spawn in a large area.<br>- Randomness with coin drops.         |         |
