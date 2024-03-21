@@ -45,7 +45,7 @@ class PathEntity(Sprite, ABC):
         if position.within(target, range=3):
             self.target += 1
 
-    def on_select(self) -> None:
+    def on_select_draw(self) -> None:
         self.draw_hit_box(line_thickness=2)
         arcade.draw_text(
             f"Heath: {self.health if self.health > 0 else 0}",

@@ -20,7 +20,11 @@ class Timer:
         self.previous: float = clock.time
 
     def available(self) -> bool:
-        return self.clock.time - self.previous >= self.delay
+        return (
+            self.clock.time - self.previous >= self.delay
+            if self.delay > 0
+            else False
+        )
 
     def update(self) -> None:
         self.previous = self.clock.time

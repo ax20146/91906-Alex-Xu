@@ -1,3 +1,4 @@
+from random import randint
 from typing import final
 
 from .coins import Bronze, Coins, Gold
@@ -24,7 +25,9 @@ class Enemy(PathEntity):
         self.coin: tuple[Coins, int] = coin
 
     def on_die(self) -> None:
-        for _ in range(self.coin[1]):
+        coin_amount = randint(0, self.coin[1])
+
+        for _ in range(coin_amount):
             self.coin[0](self.position)
 
     def on_end(self) -> None:
@@ -84,3 +87,6 @@ class Truck(Enemy):
             health=Health.HIGH,
             coin=(Gold, 1),
         )
+
+
+Enemies = type[Soldier | Zombie | Knight | Robot | Truck]

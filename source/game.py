@@ -1,11 +1,12 @@
 # /game.py
 
-from typing import Iterator, TypeVar
+from math import atan2, cos, sin
+from typing import Iterator, NamedTuple, TypeVar
 
 import arcade
 
 from .coins import Coin
-from .enemies import Enemy, Knight, Robot, Soldier, Truck, Zombie
+from .enemies import Enemies, Enemy, Soldier, Zombie
 from .entities import Particle
 from .slots import Slot
 from .tank import Tank, TankCanon
@@ -20,6 +21,24 @@ def rand_choice(choices: list[_T] | tuple[_T, ...]) -> _T:
     from random import choice
 
     return choice(choices)
+
+
+class WaveInfo(NamedTuple):
+    enemy: Enemies
+    delay: int
+
+
+def wave() -> Iterator[WaveInfo | None]:
+    for _ in range(5):
+        yield WaveInfo(Soldier, 500)
+
+    yield None
+
+    for _ in range(3):
+        yield WaveInfo(Zombie, 1000)
+
+    for _ in range(5):
+        yield WaveInfo(Soldier, 500)
 
 
 class GameOver(arcade.View):
@@ -49,14 +68,16 @@ class Game(arcade.View):
         super().__init__()
 
         self.scene: arcade.Scene
-        self.clock: Clock
-        self.timer: Timer
+        self.clock: Clock = Clock()
+        self.timer: Timer = Timer(1, self.clock)
 
         self.select: Sprite | None = None
         self.hover: Sprite | None = None
 
-        self.coin: int
-        self.health: int
+        self.coin: int = 100
+        self.wave: Iterator[WaveInfo | None] | None = wave()
+        self.wave_num: int = 1
+        self.health: int = 10
 
     def set_waypoints(self) -> Iterator[Point]:
         return (
@@ -68,12 +89,6 @@ class Game(arcade.View):
         )
 
     def on_show_view(self) -> None:
-        self.health = 10
-        self.coin = 100
-
-        self.clock = Clock()
-        self.timer = Timer(2000, self.clock)
-
         self.scene = arcade.Scene.from_tilemap(
             arcade.load_tilemap("./maps/Plains.tmx")
         )
@@ -91,6 +106,7 @@ class Game(arcade.View):
         self.scene.add_sprite_list("Towers")
         self.scene.add_sprite_list("Enemies")
         self.scene.add_sprite_list("Particles")
+        self.scene.add_sprite_list("UI")
 
         Sprite.clock = self.clock
         Tower.lst = self.scene["Towers"]
@@ -107,16 +123,16 @@ class Game(arcade.View):
             self.select = None if self.select.health <= 0 else self.select
 
         if self.hover and not self.select:
-            self.hover.on_select()  # type: ignore
+            self.hover.on_select_draw()  # type: ignore
 
         elif self.select:
-            self.select.on_select()
+            self.select.on_select_draw()  # type: ignore
 
         for i in self.scene["Enemies"]:
             if isinstance(i, Tank):
-                i.turret.draw()
+                i.turret.draw()  # type: ignore
 
-        arcade.draw_lrtb_rectangle_filled(0, 200, 64, 0, (0, 0, 0))
+        arcade.draw_lrtb_rectangle_filled(0, 200, 92, 0, (0, 0, 0))
         arcade.draw_text(
             f"Coins: {self.coin}",
             width=150,
@@ -133,25 +149,48 @@ class Game(arcade.View):
             start_x=25,
             start_y=50,
         )
+        arcade.draw_text(
+            f"Wave: {self.wave_num}",
+            width=150,
+            anchor_y="center",
+            font_size=16,
+            start_x=25,
+            start_y=75,
+        )
 
     def on_update(self, delta_time: float) -> None:
-        if self.health <= 0:
+        if self.health <= 0 or (
+            self.wave is None and not len(self.scene["Enemies"])
+        ):
             self.window.show_view(GameOver())
 
         self.clock.update(delta_time)
         self.scene.on_update(delta_time)
         self.health = Enemy.health
 
-        if self.timer.available():
-            self.timer.update()
-            self.scene.add_sprite(
-                "Enemies",
-                rand_choice((Soldier, Zombie, Robot, Knight, Truck, Tank))(),
-            )
-
         Tower.targets = self.scene.get_sprite_list("Enemies")
         Rocket.targets = self.scene.get_sprite_list("Enemies")
         TankCanon.targets = self.scene.get_sprite_list("Slots")
+
+        if self.timer.available():
+            try:
+                wave_data = next(self.wave)
+            except StopIteration:
+                self.timer.delay = 0
+                self.wave = None
+                return
+
+            if wave_data is None:
+                self.wave_num += 1
+                self.timer.delay = 10000
+                self.timer.update()
+                return
+
+            enemy, delay = wave_data
+
+            self.scene.add_sprite("Enemies", enemy())
+            self.timer.delay = delay
+            self.timer.update()
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if data := arcade.get_sprites_at_point((x, y), self.scene["Enemies"]):
@@ -189,13 +228,24 @@ class Game(arcade.View):
         self.select = None
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
+        coin: Coin
+        for coin in self.scene["Coins"]:  # type: ignore
+            p = Point(*coin.position)
+            p2 = Point(x, y)
+
+            if p.within(p2, range=64):
+                angle: float = -atan2(x - p.x, y - p.y)
+
+                coin.x -= 1 * sin(angle)
+                coin.y += 1 * cos(angle)
+
         if info := arcade.get_sprites_at_point((x, y), self.scene["Coins"]):
             coin: Coin = info[-1]  # type: ignore
             self.coin = coin.on_collect(self.coin)
             return
 
         if data := arcade.get_sprites_at_point((x, y), self.scene["Enemies"]):
-            enemy: Enemy = data[-1]
+            enemy: Enemy = data[-1]  # type: ignore
             self.hover = enemy
             return
 
