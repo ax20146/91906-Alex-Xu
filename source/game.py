@@ -60,14 +60,18 @@ class GameOver(arcade.View):
         )
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
-        self.window.show_view(Game())
+        from .menu import Menu
+
+        self.window.show_view(Menu())
 
 
 class Game(arcade.View):
-    def __init__(self) -> None:
+    def __init__(self, map: str) -> None:
         super().__init__()
 
-        self.scene: arcade.Scene
+        self.scene: arcade.Scene = arcade.Scene.from_tilemap(
+            arcade.load_tilemap(map)
+        )
         self.clock: Clock = Clock()
         self.timer: Timer = Timer(1, self.clock)
 
@@ -89,9 +93,6 @@ class Game(arcade.View):
         )
 
     def on_show_view(self) -> None:
-        self.scene = arcade.Scene.from_tilemap(
-            arcade.load_tilemap("./maps/Plains.tmx")
-        )
         Enemy.waypoints = tuple(self.set_waypoints())
 
         for slot in self.scene["Locations"]:
