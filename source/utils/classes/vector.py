@@ -2,22 +2,18 @@
 
 
 # Import Built-In Dependencies
+from dataclasses import dataclass
 from math import hypot
 
 
 # Define Vector Class
+@dataclass(frozen=True, slots=True)
 class Vector:
-    __slots__ = "x", "y"
+    x: float = 0
+    y: float = 0
 
-    def __init__(self, x: float = 0, y: float = 0) -> None:
-        self.x: float = x
-        self.y: float = y
-
-    def __eq__(self, __value: object) -> bool:
-        if not isinstance(__value, self.__class__):
-            return NotImplemented
-
-        return self.x == __value.x and self.y == __value.y
+    def __repr__(self) -> str:
+        return f"({self.x}, {self.y})"
 
     def __abs__(self) -> float:
         return hypot(self.x, self.y)
@@ -33,9 +29,6 @@ class Vector:
 
     def __truediv__(self, __value: float) -> "Vector":
         return self.__class__(self.x / __value, self.y / __value)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.x}, {self.y})"
 
     def normalise(self) -> "Vector":
         return self / abs(self)
