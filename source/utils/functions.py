@@ -1,31 +1,30 @@
 # /utils/functions.py
 
 
-from math import atan2, cos, sin
-from random import randint as _randint
+# Import Built-In Dependencies
+from random import randint
 
-from .classes import Point
+# Import Local Dependencies
+from .classes import Vector
 from .constants import SCREEN_SIZE
 
 __all__: list[str] = [
-    "cos",
-    "sin",
-    "atan2",
     "randrange",
+    "limit_within",
 ]
 
 
 def randrange(value: float, range: int) -> int:
-    return _randint(round(value) - range, round(value) + range)
+    return randint(round(value) - range, round(value) + range)
 
 
 def limit_within(
-    point: Point,
+    point: Vector,
     *,
-    lower: Point = Point(0, 0),
-    upper: Point = Point(*SCREEN_SIZE)
-) -> Point:
-    return Point(
+    lower: Vector = Vector(0, 0),
+    upper: Vector = Vector(*SCREEN_SIZE)
+) -> Vector:
+    return Vector(
         min(max(point.x, lower.x), upper.x),
         min(max(point.y, lower.y), upper.y),
     )

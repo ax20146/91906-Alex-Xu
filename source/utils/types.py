@@ -1,12 +1,12 @@
 # /utils/types.py
 
 
+# Import Built-In Dependencies
 from typing import (
     Any,
     ClassVar,
     Iterator,
     Literal,
-    NamedTuple,
     TypeAlias,
     assert_never,
     final,
@@ -18,7 +18,6 @@ __all__: list[str] = [
     "ClassVar",
     "Iterator",
     "TypeAlias",
-    "NamedTuple",
     "assert_never",
     "final",
 ]
