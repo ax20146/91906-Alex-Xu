@@ -16,6 +16,7 @@ from .vector import Vector
 # Define Sprite Class
 class Sprite(arcade.Sprite, ABC):
     clock: ClassVar[Clock]
+    sprite_list: ClassVar[arcade.SpriteList]
 
     def __init__(
         self,

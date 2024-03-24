@@ -1,9 +1,7 @@
 # /entities/coins.py
 
 
-import arcade
-
-from ..utils import Point, Sprite, Timer
+from ..utils import Sprite, Timer, Vector
 from ..utils.constants import (
     COIN_BRONZE_VALUE,
     COIN_GOLD_VALUE,
@@ -12,20 +10,26 @@ from ..utils.constants import (
     TILE_SIZE,
 )
 from ..utils.functions import limit_within, randrange
-from ..utils.types import ClassVar, TypeAlias, final
+from ..utils.types import TypeAlias, final
+
+__all__: list[str] = [
+    "Coin",
+    "Coins",
+    "Gold",
+    "Silver",
+    "Bronze",
+]
 
 
 class Coin(Sprite):
-    sprite_list: ClassVar[arcade.SpriteList]
-
     def __init__(
         self,
         filename: str,
         *,
-        position: Point,
+        position: Vector,
         value: int,
     ) -> None:
-        position = Point(
+        position = Vector(
             randrange(position.x, TILE_SIZE),
             randrange(position.y, TILE_SIZE),
         )
@@ -35,14 +39,14 @@ class Coin(Sprite):
             position=limit_within(position),
         )
 
-        self.value: int = value
-        self.timer: Timer = Timer(self.clock, delay=COIN_LIFETIME)
-
         self.sprite_list.append(self)
 
-    def on_collect(self, amount: int) -> int:
+        self.timer: Timer = Timer(self.clock, delay=COIN_LIFETIME)
+        self.value: int = value
+
+    def on_collect(self) -> int:
         self.kill()
-        return amount + self.value
+        return self.value
 
     def on_update(self, dt: float) -> None:
         if self.timer.available():
@@ -51,7 +55,7 @@ class Coin(Sprite):
 
 @final
 class Gold(Coin):
-    def __init__(self, position: Point) -> None:
+    def __init__(self, position: Vector) -> None:
         super().__init__(
             "./assets/Entities/Coins/Gold.png",
             position=position,
@@ -61,7 +65,7 @@ class Gold(Coin):
 
 @final
 class Silver(Coin):
-    def __init__(self, position: Point) -> None:
+    def __init__(self, position: Vector) -> None:
         super().__init__(
             "./assets/Entities/Coins/Silver.png",
             position=position,
@@ -71,7 +75,7 @@ class Silver(Coin):
 
 @final
 class Bronze(Coin):
-    def __init__(self, position: Point) -> None:
+    def __init__(self, position: Vector) -> None:
         super().__init__(
             "./assets/Entities/Coins/Bronze.png",
             position=position,
