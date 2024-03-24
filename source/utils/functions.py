@@ -2,6 +2,7 @@
 
 
 # Import Built-In Dependencies
+from math import cos, sin
 from random import randint
 
 # Import Local Dependencies
@@ -9,6 +10,8 @@ from .classes import Vector
 from .constants import SCREEN_SIZE
 
 __all__: list[str] = [
+    "cos",
+    "sin",
     "randrange",
     "limit_within",
 ]
