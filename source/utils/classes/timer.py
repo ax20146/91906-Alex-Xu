@@ -1,11 +1,9 @@
 # /utils/classes/timer.py
 
 
-# Import Local Dependencies
 from .clock import Clock
 
 
-# Define Timer Class
 class Timer:
     __slots__ = "delay", "_clock", "_previous"
 

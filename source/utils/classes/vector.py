@@ -1,12 +1,10 @@
 # /utils/classes/vector.py
 
 
-# Import Built-In Dependencies
 from dataclasses import dataclass
 from math import hypot
 
 
-# Define Vector Class
 @dataclass(frozen=True, slots=True)
 class Vector:
     x: float = 0
@@ -35,6 +33,9 @@ class Vector:
 
     def length(self) -> float:
         return abs(self)
+
+    def within(self, vector: "Vector", *, radius: float) -> bool:
+        return (self - vector).length() <= radius
 
     def convert(self) -> tuple[float, float]:
         return (self.x, self.y)

@@ -3,6 +3,7 @@
 
 # Import Modules
 from .clock import Clock
+from .movement import Movement
 from .sprite import Sprite
 from .timer import Timer
 from .vector import Vector
@@ -13,4 +14,5 @@ __all__: list[str] = [
     "Timer",
     "Vector",
     "Sprite",
+    "Movement",
 ]

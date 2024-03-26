@@ -1,7 +1,6 @@
 # /utils/classes/clock.py
 
 
-# Define Clock Class
 class Clock:
     __slots__ = "_time"
 

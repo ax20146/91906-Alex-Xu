@@ -1,27 +1,24 @@
 # /utils/classes/sprite.py
 
 
-# Import Built-In Dependencies
-from abc import ABC, abstractmethod
-from typing import ClassVar
-
 # Import 3rd-Party Dependencies
 import arcade
 
 # Import Local Dependencies
+from ..types import ClassVar
 from .clock import Clock
 from .vector import Vector
 
 
 # Define Sprite Class
-class Sprite(arcade.Sprite, ABC):
-    clock: ClassVar[Clock]
+class Sprite(arcade.Sprite):
     sprite_list: ClassVar[arcade.SpriteList]
+    clock: ClassVar[Clock]
 
     def __init__(
         self,
-        filename: str,
         *,
+        filename: str,
         rotation: float = 0,
         position: Vector = Vector(0, 0),
     ) -> None:
@@ -31,6 +28,8 @@ class Sprite(arcade.Sprite, ABC):
             center_x=position.x,
             center_y=position.y,
         )
+
+        self.sprite_list.append(self)
 
     @property
     def x(self) -> float:
@@ -52,14 +51,9 @@ class Sprite(arcade.Sprite, ABC):
     def position(self) -> Vector:  # type: ignore
         return Vector(self.x, self.y)
 
-    def position_set(self, position: Vector) -> None:
-        self.x = position.x
-        self.y = position.y
-
     def position_update(self, position: Vector) -> None:
         self.x += position.x
         self.y += position.y
 
-    @abstractmethod
-    def on_update(self, dt: float) -> None:  # type: ignore
+    def on_update(self, delta_time: float) -> None:  # type: ignore
         pass
