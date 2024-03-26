@@ -6,7 +6,6 @@ from ..utils.functions import cos, sin
 from ..utils.types import TypeAlias, final
 
 __all__: list[str] = [
-    "Flame",
     "Flames",
     "BigFlame",
     "SmallFlame",
@@ -21,6 +20,7 @@ class Flame(Sprite):
         rotation: float,
         position: Vector,
         lifetime: int,
+        length: float = 54,
     ) -> None:
         super().__init__(
             filename,
@@ -31,11 +31,9 @@ class Flame(Sprite):
         self.sprite_list.append(self)
 
         self.timer: Timer = Timer(self.clock, delay=lifetime)
-        self.place()
+        self.place(length)
 
-    def place(self) -> None:
-        length: float = self.height // 1.2
-
+    def place(self, length: float) -> None:
         self.x -= length * sin(self.radians)
         self.y += length * cos(self.radians)
 
