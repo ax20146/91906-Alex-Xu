@@ -15,9 +15,9 @@ __all__: list[str] = [
 
 
 class Coin(Sprite):
-    COLLECTION_RANGE: ClassVar[int] = TILE_SIZE * 3
-    LIFETIME: ClassVar[int] = 8000
-    SPEED: ClassVar[int] = 25
+    COLLECTION_RANGE = TILE_SIZE * 3
+    LIFETIME = 8000
+    SPEED = 25
 
     FILENAME: ClassVar[str]
     VALUE: ClassVar[int]
