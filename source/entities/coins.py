@@ -1,19 +1,13 @@
 # /entities/coins.py
 
 
-from ..utils import Sprite, Timer, Vector
-from ..utils.constants import (
-    COIN_BRONZE_VALUE,
-    COIN_GOLD_VALUE,
-    COIN_LIFETIME,
-    COIN_SILVER_VALUE,
-    TILE_SIZE,
-)
+from ..utils import Movement, Sprite, Timer, Vector
+from ..utils.constants import TILE_SIZE
 from ..utils.functions import limit_within, randrange
-from ..utils.types import TypeAlias, final
+from ..utils.types import ClassVar, final
 
 __all__: list[str] = [
-    "Coins",
+    "Coin",
     "Gold",
     "Silver",
     "Bronze",
@@ -21,12 +15,16 @@ __all__: list[str] = [
 
 
 class Coin(Sprite):
+    COLLECTION_RANGE: ClassVar[int] = TILE_SIZE * 3
+    LIFETIME: ClassVar[int] = 8000
+    SPEED: ClassVar[int] = 25
+
+    FILENAME: ClassVar[str]
+    VALUE: ClassVar[int]
+
     def __init__(
         self,
-        filename: str,
-        *,
         position: Vector,
-        value: int,
     ) -> None:
         position = Vector(
             randrange(position.x, TILE_SIZE),
@@ -34,52 +32,42 @@ class Coin(Sprite):
         )
 
         super().__init__(
-            filename,
+            filename=self.FILENAME,
             position=limit_within(position),
         )
 
-        self.sprite_list.append(self)
+        self.timer: Timer = Timer(self.clock, delay=self.LIFETIME)
+        self.movement: Movement = Movement(self, self.SPEED)
 
-        self.timer: Timer = Timer(self.clock, delay=COIN_LIFETIME)
-        self.value: int = value
+    def attract(self, target: Vector) -> None:
+        if self.position.within(target, radius=self.COLLECTION_RANGE):
+            self.movement.update_target(target)
 
-    def on_collect(self) -> int:
+    def collect(self) -> int:
         self.kill()
-        return self.value
+        return self.VALUE
 
-    def on_update(self, dt: float) -> None:
+    def on_update(self, delta_time: float) -> None:
+        if self.movement.has_target():
+            self.movement.move(delta_time)
+
         if self.timer.available():
             self.kill()
 
 
 @final
 class Gold(Coin):
-    def __init__(self, position: Vector) -> None:
-        super().__init__(
-            "./assets/Entities/Coins/Gold.png",
-            position=position,
-            value=COIN_GOLD_VALUE,
-        )
+    FILENAME = "./assets/Entities/Coins/Gold.png"
+    VALUE = 10
 
 
 @final
 class Silver(Coin):
-    def __init__(self, position: Vector) -> None:
-        super().__init__(
-            "./assets/Entities/Coins/Silver.png",
-            position=position,
-            value=COIN_SILVER_VALUE,
-        )
+    FILENAME = "./assets/Entities/Coins/Silver.png"
+    VALUE = 5
 
 
 @final
 class Bronze(Coin):
-    def __init__(self, position: Vector) -> None:
-        super().__init__(
-            "./assets/Entities/Coins/Bronze.png",
-            position=position,
-            value=COIN_BRONZE_VALUE,
-        )
-
-
-Coins: TypeAlias = type[Gold | Silver | Bronze]
+    FILENAME = "./assets/Entities/Coins/Bronze.png"
+    VALUE = 1
