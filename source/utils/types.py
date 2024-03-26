@@ -7,6 +7,7 @@ from typing import (
     ClassVar,
     Iterator,
     Literal,
+    NamedTuple,
     TypeAlias,
     assert_never,
     final,
@@ -18,6 +19,7 @@ __all__: list[str] = [
     "ClassVar",
     "Iterator",
     "TypeAlias",
+    "NamedTuple",
     "assert_never",
     "final",
 ]

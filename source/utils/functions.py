@@ -7,7 +7,7 @@ from random import randint
 
 # Import Local Dependencies
 from .classes import Vector
-from .constants import SCREEN_SIZE
+from .constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 __all__: list[str] = [
     "cos",
@@ -25,7 +25,7 @@ def limit_within(
     point: Vector,
     *,
     lower: Vector = Vector(0, 0),
-    upper: Vector = Vector(*SCREEN_SIZE)
+    upper: Vector = Vector(SCREEN_WIDTH, SCREEN_HEIGHT)
 ) -> Vector:
     return Vector(
         min(max(point.x, lower.x), upper.x),
