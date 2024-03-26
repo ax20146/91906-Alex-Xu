@@ -29,5 +29,8 @@ class Movement:
             movement.normalise() * self._speed * delta_time
         )
 
+    def has_target(self) -> bool:
+        return self._target is not None
+
     def update_target(self, target: Vector) -> None:
         self._target = target
