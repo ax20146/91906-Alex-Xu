@@ -13,7 +13,6 @@ from ..utils.functions import limit_within, randrange
 from ..utils.types import TypeAlias, final
 
 __all__: list[str] = [
-    "Coin",
     "Coins",
     "Gold",
     "Silver",

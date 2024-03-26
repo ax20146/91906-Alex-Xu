@@ -52,6 +52,14 @@ class Sprite(arcade.Sprite, ABC):
     def position(self) -> Vector:  # type: ignore
         return Vector(self.x, self.y)
 
+    def position_set(self, position: Vector) -> None:
+        self.x = position.x
+        self.y = position.y
+
+    def position_update(self, position: Vector) -> None:
+        self.x += position.x
+        self.y += position.y
+
     @abstractmethod
     def on_update(self, dt: float) -> None:  # type: ignore
         pass
