@@ -1,27 +1,16 @@
-# /entities/particles.py
-
-
 from ..utils import Sprite, Timer, Vector
+from ..utils.constants import TILE_SIZE
 from ..utils.functions import cos, sin
-from ..utils.types import ClassVar, final
-
-__all__: list[str] = [
-    "Flame",
-    "BigFlame",
-    "SmallFlame",
-]
+from ..utils.types import final
 
 
 class Flame(Sprite):
-    LENGTH = 54
+    LENGTH = TILE_SIZE // 54
 
-    FILENAME: ClassVar[str]
+    FILENAME: str
 
     def __init__(
-        self,
-        rotation: float,
-        position: Vector,
-        lifetime: int,
+        self, rotation: float, position: Vector, *, lifetime: int
     ) -> None:
         super().__init__(
             filename=self.FILENAME,
@@ -29,21 +18,21 @@ class Flame(Sprite):
             position=position,
         )
 
-        self.timer: Timer = Timer(self.clock, delay=lifetime)
+        self.timer: Timer = Timer(self.clock, lifetime)
         self.place()
 
     def place(self) -> None:
         self.x -= self.LENGTH * sin(self.radians)
         self.y += self.LENGTH * cos(self.radians)
 
-    def on_update(self, delta_time: float) -> None:
+    def update(self) -> None:
         if self.timer.available():
             self.kill()
 
 
 @final
 class BigFlame(Flame):
-    FILENAME = "/assets/Particles/FlameBig.png"
+    FILENAME = "./assets/Particles/FlameBig.png"
 
 
 @final

@@ -1,18 +1,8 @@
 # /entities/enemies.py
 
-
-from ..utils import Movement, Sprite, Vector
-from ..utils.types import ClassVar, NamedTuple, final
-from .coins import *
-
-__all__: list[str] = [
-    "Enemy",
-    "Solider",
-    "Zombie",
-    "Knight",
-    "Robot",
-    "Truck",
-]
+from ..utils.types import NamedTuple, final
+from .coins import Bronze, Coin, Gold, Silver
+from .entity import Entity
 
 
 class Drops(NamedTuple):
@@ -20,90 +10,61 @@ class Drops(NamedTuple):
     amount: int
 
 
-class Enemy(Sprite):
-    waypoints: ClassVar[tuple[Vector, ...]]
+class Enemy(Entity):
+    DROPS: Drops
 
-    FILENAME: ClassVar[str]
-    HEALTH: ClassVar[int]
-    SPEED: ClassVar[int]
-    DROPS: ClassVar[Drops]
+    def on_end(self) -> int:
+        self.on_die()
+        return self.health
 
-    def __init__(self) -> None:
-        super().__init__(
-            filename=self.FILENAME,
-            position=self.waypoints[0],
-        )
-
-        self.target: int = 1
-        self.health: int = self.HEALTH
-        self.movement: Movement = Movement(
-            self, self.SPEED, self.waypoints[self.target]
-        )
-
-    def can_attack(self) -> bool:
-        return self.target >= len(self.waypoints)
-
-    def is_alive(self) -> bool:
-        return self.health > 0
-
-    def toward_target(self) -> None:
-        self.face_point(self.waypoints[self.target].convert())
-
-    def update_target(self) -> None:
-        if self.position == self.waypoints[self.target]:
-            self.target += 1
-            self.movement.update_target(self.waypoints[self.target])
-
-    def on_update(self, delta_time: float) -> None:
-        self.movement.move(delta_time)
-        self.toward_target()
-        self.update_target()
-
-        if not self.is_alive():
-            self.die()
-
-    def die(self) -> None:
+    def on_die(self) -> None:
         self.kill()
 
         for _ in range(self.DROPS.amount):
-            self.DROPS.coin(self.position)
+            self.DROPS.coin(self.xy)
+
+    def update(self) -> None:
+        super().update()
+
+        if not self.is_alive():
+            self.on_die()
 
 
 @final
-class Solider(Enemy):
-    FILENAME = "./assets/Entities/Troops/Soldier.png"
+class Soldier(Enemy):
+    FILENAME = "/assets/Entities/Troops/Soldier.png"
     HEALTH = 10
-    SPEED = 80
-    DROPS = Drops(Bronze, 2)
+    SPEED = 10
+    DROPS = Drops(Bronze, 3)
 
 
 @final
 class Zombie(Enemy):
-    FILENAME = "./assets/Entities/Troops/Zombie.png"
-    HEALTH = 10
-    SPEED = 80
-    DROPS = Drops(Bronze, 2)
+    FILENAME = "/assets/Entities/Troops/Zombie.png"
+    HEALTH = 5
+    SPEED = 25
+    DROPS = Drops(Bronze, 3)
 
 
 @final
 class Knight(Enemy):
-    FILENAME = "./assets/Entities/Troops/Knight.png"
-    HEALTH = 10
-    SPEED = 80
-    DROPS = Drops(Bronze, 2)
+    FILENAME = "/assets/Entities/Troops/Knight.png"
+    HEALTH = 20
+    SPEED = 8
+    DROPS = Drops(Silver, 1)
 
 
 @final
 class Robot(Enemy):
-    FILENAME = "./assets/Entities/Troops/Robot.png"
-    HEALTH = 10
-    SPEED = 80
-    DROPS = Drops(Bronze, 2)
+    FILENAME = "/assets/Entities/Troops/Robot.png"
+    HEALTH = 20
+    SPEED = 10
+    DROPS = Drops(Silver, 2)
 
 
 @final
 class Truck(Enemy):
-    FILENAME = "./assets/Entities/Vehicles/TankSmall.png"
-    HEALTH = 10
-    SPEED = 80
-    DROPS = Drops(Bronze, 2)
+    FILENAME = "/assets/Entities/Vehicles/TankSmall.png"
+    HEALTH = 40
+    SPEED = 10
+    DROPS = Drops(Gold, 1)

@@ -2,16 +2,8 @@
 
 
 from ..utils import Sprite, Timer, Vector
-from ..utils.constants import TILE_SIZE
-from ..utils.functions import limit_within
+from ..utils.constants import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE
 from ..utils.types import final
-
-__all__: list[str] = [
-    "Coin",
-    "Gold",
-    "Silver",
-    "Bronze",
-]
 
 
 class Coin(Sprite):
@@ -23,7 +15,9 @@ class Coin(Sprite):
     def __init__(self, position: Vector) -> None:
         super().__init__(
             filename=self.FILENAME,
-            position=limit_within(position.randomise(TILE_SIZE)),
+            position=position.randomise(TILE_SIZE).limit(
+                Vector(), Vector(SCREEN_WIDTH, SCREEN_HEIGHT)
+            ),
         )
 
         self.timer: Timer = Timer(self.clock, self.LIFETIME)
@@ -32,7 +26,7 @@ class Coin(Sprite):
         self.kill()
         return self.VALUE
 
-    def on_update(self, delta_time: float) -> None:
+    def update(self) -> None:
         if self.timer.available():
             self.kill()
 
