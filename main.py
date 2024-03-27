@@ -1,7 +1,7 @@
 # /main.py
 
 
-from source import Window, create_window
+from source import *
 
 
 def main() -> None:
