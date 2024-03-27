@@ -5,17 +5,17 @@ from .clock import Clock
 
 
 class Timer:
-    __slots__ = "delay", "_clock", "_previous"
+    __slots__ = "duration", "_clock", "_previous"
 
-    def __init__(self, clock: Clock, delay: int) -> None:
-        self.delay: int = delay
+    def __init__(self, clock: Clock, duration: int) -> None:
+        self.duration: int = duration
         self._clock: Clock = clock
         self._previous: float = clock.time
 
     def available(self) -> bool:
         return (
-            self._clock.time - self._previous >= self.delay
-            if self.delay > 0
+            self._clock.time - self._previous >= self.duration
+            if self.duration > 0
             else False
         )
 

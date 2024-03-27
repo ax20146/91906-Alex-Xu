@@ -1,25 +1,7 @@
 # /utils/types.py
 
-
-# Import Built-In Dependencies
-from typing import (
-    Any,
-    ClassVar,
-    Iterator,
-    Literal,
-    NamedTuple,
-    TypeAlias,
-    assert_never,
-    final,
-)
+from typing import final
 
 __all__: list[str] = [
-    "Any",
-    "Literal",
-    "ClassVar",
-    "Iterator",
-    "TypeAlias",
-    "NamedTuple",
-    "assert_never",
     "final",
 ]

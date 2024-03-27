@@ -1,16 +1,14 @@
 # /utils/classes/sprite.py
 
 
-# Import 3rd-Party Dependencies
+from typing import ClassVar
+
 import arcade
 
-# Import Local Dependencies
-from ..types import ClassVar
 from .clock import Clock
 from .vector import Vector
 
 
-# Define Sprite Class
 class Sprite(arcade.Sprite):
     sprite_list: ClassVar[arcade.SpriteList]
     clock: ClassVar[Clock]
@@ -48,12 +46,12 @@ class Sprite(arcade.Sprite):
         self.center_y = __value
 
     @property
-    def position(self) -> Vector:  # type: ignore
-        return Vector(self.x, self.y)
+    def xy(self) -> Vector:
+        return Vector(*self.position)
 
-    def position_update(self, position: Vector) -> None:
-        self.x += position.x
-        self.y += position.y
+    @xy.setter
+    def xy(self, __value: Vector) -> None:
+        self.position = __value.convert()
 
-    def on_update(self, delta_time: float) -> None:  # type: ignore
+    def update(self) -> None:
         pass
