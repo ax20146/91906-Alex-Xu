@@ -3,77 +3,49 @@
 
 from ..utils import Sprite, Timer, Vector
 from ..utils.functions import cos, sin
-from ..utils.types import TypeAlias, final
+from ..utils.types import ClassVar, final
 
 __all__: list[str] = [
-    "Flames",
+    "Flame",
     "BigFlame",
     "SmallFlame",
 ]
 
 
 class Flame(Sprite):
+    LENGTH = 54
+
+    FILENAME: ClassVar[str]
+
     def __init__(
         self,
-        filename: str,
-        *,
         rotation: float,
         position: Vector,
         lifetime: int,
-        length: float = 54,
     ) -> None:
         super().__init__(
-            filename,
+            filename=self.FILENAME,
             rotation=rotation,
             position=position,
         )
 
-        self.sprite_list.append(self)
-
         self.timer: Timer = Timer(self.clock, delay=lifetime)
-        self.place(length)
+        self.place()
 
-    def place(self, length: float) -> None:
-        self.x -= length * sin(self.radians)
-        self.y += length * cos(self.radians)
+    def place(self) -> None:
+        self.x -= self.LENGTH * sin(self.radians)
+        self.y += self.LENGTH * cos(self.radians)
 
-    def on_update(self, dt: float) -> None:
+    def on_update(self, delta_time: float) -> None:
         if self.timer.available():
             self.kill()
 
 
 @final
 class BigFlame(Flame):
-    def __init__(
-        self,
-        rotation: float,
-        position: Vector,
-        *,
-        lifetime: int,
-    ) -> None:
-        super().__init__(
-            "./assets/Particles/FlameBig.png",
-            rotation=rotation,
-            position=position,
-            lifetime=lifetime,
-        )
+    FILENAME = "/assets/Particles/FlameBig.png"
 
 
 @final
 class SmallFlame(Flame):
-    def __init__(
-        self,
-        rotation: float,
-        position: Vector,
-        *,
-        lifetime: int,
-    ) -> None:
-        super().__init__(
-            "./assets/Particles/FlameSmall.png",
-            rotation=rotation,
-            position=position,
-            lifetime=lifetime,
-        )
-
-
-Flames: TypeAlias = type[BigFlame | SmallFlame]
+    FILENAME = "./assets/Particles/FlameSmall.png"
