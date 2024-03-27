@@ -35,5 +35,5 @@ class Movement:
 
         self._sprite.face_point(self.target.convert())
 
-    def update_target(self, target: Vector | None) -> None:
+    def update_target(self, target: Vector | None = None) -> None:
         self._target = target

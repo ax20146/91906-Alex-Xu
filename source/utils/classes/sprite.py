@@ -1,10 +1,9 @@
 # /utils/classes/sprite.py
 
 
-from typing import ClassVar
-
 import arcade
 
+from ..types import ClassVar
 from .clock import Clock
 from .vector import Vector
 

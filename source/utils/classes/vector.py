@@ -1,9 +1,7 @@
 # /utils/classes/vector.py
 
 
-from dataclasses import dataclass
-from math import hypot
-from random import randint
+from ..functions import dataclass, hypot, randint
 
 
 @dataclass(frozen=True, slots=True, repr=False)
