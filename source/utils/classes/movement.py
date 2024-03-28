@@ -32,3 +32,7 @@ class Movement:
 
     def update_target(self, target: Vector) -> None:
         self._target = target
+
+    def update(self) -> None:
+        self.move()
+        self.rotate()
