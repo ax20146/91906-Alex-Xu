@@ -9,15 +9,14 @@ from .vector import Vector
 
 
 class Sprite(arcade.Sprite):
-    sprite_list: ClassVar[arcade.SpriteList]
     clock: ClassVar[Clock]
 
     def __init__(
         self,
         *,
         filename: str,
+        position: Vector,
         rotation: float = 0,
-        position: Vector = Vector(0, 0),
     ) -> None:
         super().__init__(
             filename,
@@ -25,8 +24,6 @@ class Sprite(arcade.Sprite):
             center_x=position.x,
             center_y=position.y,
         )
-
-        self.sprite_list.append(self)
 
     @property
     def x(self) -> float:
