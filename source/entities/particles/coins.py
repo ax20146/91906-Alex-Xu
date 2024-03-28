@@ -1,4 +1,4 @@
-# "/entities/particles/coins.py
+# /entities/particles/coins.py
 
 
 import arcade
@@ -10,12 +10,11 @@ from .particles import Particle
 
 
 class Coin(Particle):
+    LIFETIME = 8000
     sprite_list: ClassVar[arcade.SpriteList]
 
     FILENAME: ClassVar[str]
     VALUE: ClassVar[int]
-
-    LIFETIME = 8000
 
     def __init__(self, position: Vector) -> None:
         super().__init__(
@@ -25,8 +24,6 @@ class Coin(Particle):
                 Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT)
             ),
         )
-
-        self.sprite_list.append(self)
 
     def on_collect(self) -> int:
         self.kill()
