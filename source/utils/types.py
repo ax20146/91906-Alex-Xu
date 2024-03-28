@@ -1,8 +1,9 @@
 # /utils/types.py
 
-from typing import ClassVar, Iterator, NamedTuple, final
+from typing import Any, ClassVar, Iterator, NamedTuple, final
 
 __all__: list[str] = [
+    "Any",
     "ClassVar",
     "Iterator",
     "NamedTuple",

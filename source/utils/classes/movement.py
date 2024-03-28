@@ -8,11 +8,11 @@ class Movement:
     __slots__ = "_target", "_speed", "_sprite"
 
     def __init__(
-        self, sprite: Sprite, speed: int, target: Vector | None = None
+        self, sprite: Sprite, speed: float, target: Vector | None = None
     ) -> None:
         self._target: Vector | None = target
         self._sprite: Sprite = sprite
-        self._speed: int = speed
+        self._speed: float = speed
 
     @property
     def target(self) -> Vector | None:
