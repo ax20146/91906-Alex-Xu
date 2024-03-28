@@ -5,17 +5,20 @@ import arcade
 
 from ...utils import Vector
 from ...utils.types import ClassVar, final
+from ..turrets.canons import TankCanon
 from .enemies import Enemy
 from .entities import Entity
 
 
 class Reinforcement(Entity):
+    sprite_list: ClassVar[arcade.SpriteList]
     waypoints: ClassVar[tuple[Vector, ...]]
     targets: ClassVar[arcade.SpriteList]
 
     FILENAME: ClassVar[str]
     HEALTH: ClassVar[int]
     SPEED: ClassVar[float]
+    PRICE: ClassVar[int]
 
     def __init__(self) -> None:
         super().__init__(
@@ -23,6 +26,12 @@ class Reinforcement(Entity):
             health=self.HEALTH,
             speed=self.SPEED,
         )
+
+        self.sprite_list.append(self)
+
+    @classmethod
+    def affordable(cls, amount: int) -> bool:
+        return amount >= cls.PRICE
 
     def on_collide(self) -> None:
         if not (
@@ -61,11 +70,27 @@ class Tank(Reinforcement):
     HEALTH = 75
     SPEED = 0.5
 
+    FIRERATE = 10
+    DAMAGE = 10
+    RANGE = 10
+
     def __init__(self) -> None:
         super().__init__()
 
-        self.turret = ...
+        self.turret: TankCanon = TankCanon(
+            filename="./assets/Entities/Vehicles/TankSmallGun.png",
+            position=self.xy,
+            firerate=self.FIRERATE,
+            damage=self.DAMAGE,
+            range=self.RANGE,
+            targets=self.targets,
+        )
 
     def update(self) -> None:
-        return super().update()
-        self.turret
+        super().update()
+        self.turret.xy = self.xy
+
+        if not self.turret.target:
+            return
+
+        self.turret.face_point(self.movement.target.convert())
