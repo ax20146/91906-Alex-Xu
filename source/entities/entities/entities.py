@@ -4,6 +4,7 @@
 import arcade
 
 from ...utils import Movement, Sprite, Vector
+from ...utils.functions import process_pascal_case
 from ...utils.types import ClassVar
 
 
@@ -58,7 +59,7 @@ class Entity(Sprite):
             self.x, self.y + 48, 82, 15, (0, 0, 0, 180)
         )
         arcade.draw_text(
-            f"{self.__class__.__name__.capitalize()}:",
+            f"{process_pascal_case(self.__class__.__name__)}:",
             self.x - 40,
             self.y + 50,
             font_size=8,
