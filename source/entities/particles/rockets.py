@@ -6,7 +6,7 @@ import arcade
 from ...utils import Movement, Vector
 from ...utils.constants import TILE_SIZE
 from ...utils.types import Iterator, final
-from ..entity import Entity
+from ..entities import Entity
 from .particles import Particle
 
 
