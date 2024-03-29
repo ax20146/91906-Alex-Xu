@@ -6,8 +6,7 @@ import arcade
 from ...utils import Vector
 from ...utils.constants import TILE_SIZE
 from ...utils.types import ClassVar, final
-from ..particles.flames import BigFlame
-from ..particles.rockets import Rocket
+from .. import particles
 from .turrets import Turret
 
 
@@ -45,7 +44,7 @@ class Tower(Turret):
         position: Vector = self.xy - (
             self.xy - self.target.xy
         ).normalise() * (self.height // 1.5)
-        BigFlame(
+        particles.flames.BigFlame(
             position,
             self.angle,
             min(self.FIRERATE // 2, 200),
@@ -82,7 +81,7 @@ class RocketLauncher(Tower):
         if not self.target:
             return
 
-        Rocket(
+        particles.rockets.Rocket(
             self.xy,
             self.target.xy,
             targets=self.targets,

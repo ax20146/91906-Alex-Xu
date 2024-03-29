@@ -5,13 +5,12 @@ import arcade
 
 from ...utils import Vector
 from ...utils.types import ClassVar, NamedTuple, final
-from ..particles.coins import Bronze, Coin, Gold
-from ..turrets import canons
+from .. import particles, turrets
 from .entities import Entity
 
 
 class Drops(NamedTuple):
-    coin: type[Coin]
+    coin: type[particles.coins.Coin]
     amount: int
 
 
@@ -51,7 +50,7 @@ class Soldier(Enemy):
     FILENAME = "./assets/Entities/Troops/Soldier.png"
     HEALTH = 20
     SPEED = 1
-    DROPS = Drops(Bronze, 2)
+    DROPS = Drops(particles.coins.Bronze, 2)
 
 
 @final
@@ -59,7 +58,7 @@ class Zombie(Enemy):
     FILENAME = "./assets/Entities/Troops/Zombie.png"
     HEALTH = 10
     SPEED = 2
-    DROPS = Drops(Bronze, 3)
+    DROPS = Drops(particles.coins.Bronze, 3)
 
 
 @final
@@ -67,7 +66,7 @@ class Knight(Enemy):
     FILENAME = "./assets/Entities/Troops/Knight.png"
     HEALTH = 40
     SPEED = 0.5
-    DROPS = Drops(Gold, 1)
+    DROPS = Drops(particles.coins.Gold, 1)
 
 
 @final
@@ -75,7 +74,7 @@ class Robot(Enemy):
     FILENAME = "./assets/Entities/Troops/Robot.png"
     HEALTH = 30
     SPEED = 1
-    DROPS = Drops(Gold, 2)
+    DROPS = Drops(particles.coins.Gold, 2)
 
 
 @final
@@ -83,7 +82,7 @@ class Tank(Enemy):
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
     HEALTH = 200
     SPEED = 1
-    DROPS = Drops(Gold, 5)
+    DROPS = Drops(particles.coins.Gold, 5)
 
     FIRERATE = 1000
     DAMAGE = 10
@@ -92,7 +91,7 @@ class Tank(Enemy):
     def __init__(self) -> None:
         super().__init__()
 
-        self.turret: canons.TankCanon = canons.TankCanon(
+        self.turret: turrets.canons.TankCanon = turrets.canons.TankCanon(
             filename="./assets/Entities/Vehicles/TankBigGun.png",
             position=self.xy,
             firerate=self.FIRERATE,

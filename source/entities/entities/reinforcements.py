@@ -5,7 +5,7 @@ import arcade
 
 from ...utils import Vector
 from ...utils.types import ClassVar, final
-from ..turrets import canons
+from .. import turrets
 from .enemies import Enemy
 from .entities import Entity
 
@@ -78,7 +78,7 @@ class Tank(Reinforcement):
     def __init__(self) -> None:
         super().__init__()
 
-        self.turret: canons.TankCanon = canons.TankCanon(
+        self.turret: turrets.canons.TankCanon = turrets.canons.TankCanon(
             filename="./assets/Entities/Vehicles/TankSmallGun.png",
             position=self.xy,
             firerate=self.FIRERATE,

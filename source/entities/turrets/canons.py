@@ -1,12 +1,13 @@
 # /entities/turrets/canons.py
 
 
-from source.utils.classes.vector import Vector
-
-from ..particles.flames import SmallFlame
+from ...utils import Vector
+from ...utils.types import final
+from .. import particles
 from .turrets import Turret
 
 
+@final
 class TankCanon(Turret):
     def attack(self) -> None:
         if not self.target:
@@ -17,7 +18,7 @@ class TankCanon(Turret):
             self.xy - self.target.xy
         ).normalise() * (self.height // 1.2)
 
-        SmallFlame(
+        particles.flames.SmallFlame(
             position,
             self.angle,
             200,
