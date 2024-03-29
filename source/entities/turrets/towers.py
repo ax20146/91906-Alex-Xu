@@ -42,8 +42,11 @@ class Tower(Turret):
             return
 
         super().attack()
+        position: Vector = self.xy - (
+            self.xy - self.target.xy
+        ).normalise() * (self.height // 1.5)
         BigFlame(
-            (self.xy - self.target.xy).normalise() * (self.height // 1.2),
+            position,
             self.angle,
             min(self.FIRERATE // 2, 200),
         )

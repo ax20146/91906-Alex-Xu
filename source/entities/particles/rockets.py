@@ -6,7 +6,7 @@ import arcade
 from ...utils import Movement, Vector
 from ...utils.constants import TILE_SIZE
 from ...utils.types import Iterator, final
-from ..entities import Entity
+from .. import entities
 from .particles import Particle
 
 
@@ -35,10 +35,10 @@ class Rocket(Particle):
         self.movement: Movement = Movement(self, target, speed)
 
     def explode(self) -> None:
-        sprites: Iterator[Entity] = (
+        sprites: Iterator[entities.Entity] = (
             sprite
             for sprite in self.targets
-            if isinstance(sprite, Entity)
+            if isinstance(sprite, entities.Entity)
             and arcade.get_distance_between_sprites(self, sprite)
             <= self.range
         )

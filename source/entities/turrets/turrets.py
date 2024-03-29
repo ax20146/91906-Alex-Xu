@@ -4,7 +4,7 @@
 import arcade
 
 from ...utils import Sprite, Timer, Vector
-from ..entities import Entity
+from .. import entities
 
 
 class Turret(Sprite):
@@ -27,7 +27,7 @@ class Turret(Sprite):
         self.reload: Timer = Timer(self.clock, firerate // 3)
 
         self.targets: arcade.SpriteList = targets
-        self.target: Entity | None = None
+        self.target: entities.Entity | None = None
         self.damage: int = damage
         self.range: float = range
 
@@ -37,7 +37,7 @@ class Turret(Sprite):
         for sprite in (
             sprite
             for sprite in self.targets
-            if isinstance(sprite, Entity)
+            if isinstance(sprite, entities.Entity)
             and self.xy.within(sprite.xy, self.range)
         ):
             self.target = self.target or sprite
@@ -51,7 +51,6 @@ class Turret(Sprite):
 
     def update(self) -> None:
         self.update_target()
-
         if not self.reload.available() or not self.target:
             return
 
@@ -64,5 +63,4 @@ class Turret(Sprite):
     def attack(self) -> None:
         if not self.target:
             return
-
         self.target.health -= self.damage

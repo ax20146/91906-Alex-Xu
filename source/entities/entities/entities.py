@@ -5,18 +5,16 @@ import arcade
 
 from ...utils import Movement, Sprite, Vector
 from ...utils.functions import process_pascal_case
-from ...utils.types import ClassVar
 
 
 class Entity(Sprite):
-    waypoints: ClassVar[tuple[Vector, ...]]
-
     def __init__(
         self,
         *,
         filename: str,
         health: int,
         speed: float,
+        waypoints: tuple[Vector, ...],
     ) -> None:
         super().__init__(
             filename=filename,
@@ -26,6 +24,7 @@ class Entity(Sprite):
         self.target: int = 1
         self.health: int = health
         self.HEALTH: int = health
+        self.waypoints = waypoints
         self.movement: Movement = Movement(
             self, self.waypoints[self.target], speed
         )
@@ -79,9 +78,15 @@ class Entity(Sprite):
 
         self.draw_hit_box(line_thickness=2)
 
+    def on_die(self) -> None:
+        self.kill()
+
     def update(self) -> None:
         self.movement.update()
         self.update_target()
+
+        if self.is_dead():
+            self.on_die()
 
     def update_target(self) -> None:
         if self.xy == self.waypoints[self.target]:

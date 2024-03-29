@@ -6,7 +6,7 @@ import arcade
 from ...utils import Vector
 from ...utils.types import ClassVar, NamedTuple, final
 from ..particles.coins import Bronze, Coin, Gold
-from ..turrets.canons import TankCanon
+from ..turrets import canons
 from .entities import Entity
 
 
@@ -30,6 +30,7 @@ class Enemy(Entity):
             filename=self.FILENAME,
             health=self.HEALTH,
             speed=self.SPEED,
+            waypoints=self.waypoints,
         )
 
         self.sprite_list.append(self)
@@ -39,16 +40,10 @@ class Enemy(Entity):
         return self.health
 
     def on_die(self) -> None:
-        self.kill()
+        super().on_die()
 
         for _ in range(self.DROPS.amount):
             self.DROPS.coin(self.xy)
-
-    def update(self) -> None:
-        super().update()
-
-        if self.is_dead():
-            self.on_die()
 
 
 @final
@@ -87,17 +82,17 @@ class Robot(Enemy):
 class Tank(Enemy):
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
     HEALTH = 200
-    SPEED = 0.2
+    SPEED = 1
     DROPS = Drops(Gold, 5)
 
-    FIRERATE = 10
+    FIRERATE = 1000
     DAMAGE = 10
-    RANGE = 10
+    RANGE = 800
 
     def __init__(self) -> None:
         super().__init__()
 
-        self.turret: TankCanon = TankCanon(
+        self.turret: canons.TankCanon = canons.TankCanon(
             filename="./assets/Entities/Vehicles/TankBigGun.png",
             position=self.xy,
             firerate=self.FIRERATE,
@@ -105,12 +100,16 @@ class Tank(Enemy):
             range=self.RANGE,
             targets=self.targets,
         )
+        self.sprite_list.append(self.turret)
 
     def update(self) -> None:
         super().update()
         self.turret.xy = self.xy
 
+        self.turret.update()
         if not self.turret.target:
-            return
+            self.turret.face_point(self.movement.target.convert())
 
-        self.turret.face_point(self.movement.target.convert())
+    def on_die(self) -> None:
+        self.turret.kill()
+        super().on_die()

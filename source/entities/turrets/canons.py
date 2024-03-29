@@ -1,19 +1,24 @@
 # /entities/turrets/canons.py
 
 
+from source.utils.classes.vector import Vector
+
 from ..particles.flames import SmallFlame
 from .turrets import Turret
 
 
 class TankCanon(Turret):
     def attack(self) -> None:
-        super().attack()
-
         if not self.target:
             return
 
+        super().attack()
+        position: Vector = self.xy - (
+            self.xy - self.target.xy
+        ).normalise() * (self.height // 1.2)
+
         SmallFlame(
-            (self.xy - self.target.xy).normalise() * (self.height // 1.2),
+            position,
             self.angle,
-            min(self.timer.duration // 2, 200),
+            200,
         )
