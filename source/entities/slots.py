@@ -30,7 +30,7 @@ class Slot(Sprite):
             name,
             self.x,
             self.y + 35,
-            font_size=10,
+            font_size=8,
             color=(50, 50, 50),
             anchor_x="center",
             anchor_y="center",

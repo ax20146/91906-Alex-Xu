@@ -21,5 +21,5 @@ class TankCanon(Turret):
         particles.flames.SmallFlame(
             position,
             self.angle,
-            200,
+            100,
         )

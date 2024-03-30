@@ -1,253 +1,306 @@
-# /game.py
-
-from math import atan2, cos, sin
-from typing import Iterator, NamedTuple, TypeVar
+from typing import Any, Callable
 
 import arcade
+import arcade.gui
 
-from .coins import Coin
-from .enemies import Enemies, Enemy, Soldier, Zombie
-from .entities import Particle
-from .slots import Slot
-from .tank import Tank, TankCanon
-from .towers import Canon, MachineGun, Rocket, RocketLauncher, Tower
-from .utils import Clock, Point, Sprite, Timer
-from .utils.constants import Screen
+from . import menu
+from .entities.entities.enemies import Enemy
+from .entities.entities.entities import Entity
+from .entities.entities.reinforcements import Reinforcement, Tank, Truck
+from .entities.particles.coins import Coin
+from .entities.particles.particles import Particle
+from .entities.slots import Slot
+from .entities.turrets.canons import TankCanon
+from .entities.turrets.towers import Canon, MachineGun, RocketLauncher, Tower
+from .utils import Clock, Sprite, Timer, Vector, functions
+from .utils.functions import coinbar_draw, healthbar_draw, wavebar_draw
+from .utils.types import Any
+from .wave import wave
 
-_T = TypeVar("_T")
-
-
-def rand_choice(choices: list[_T] | tuple[_T, ...]) -> _T:
-    from random import choice
-
-    return choice(choices)
-
-
-class WaveInfo(NamedTuple):
-    enemy: Enemies
-    delay: int
+UI_TOWER_BTN = 0
 
 
-def wave() -> Iterator[WaveInfo | None]:
-    for _ in range(5):
-        yield WaveInfo(Soldier, 500)
+class Btn(Sprite):
+    def __init__(
+        self,
+        filename: str,
+        position: Vector,
+        click: type[Tower | Reinforcement],
+    ) -> None:
+        super().__init__(filename=filename, position=position)
+        self.click: type[Tower | Reinforcement] = click
 
-    yield None
-
-    for _ in range(3):
-        yield WaveInfo(Zombie, 1000)
-
-    for _ in range(5):
-        yield WaveInfo(Soldier, 500)
-
-
-class GameOver(arcade.View):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def on_draw(self):
-        arcade.draw_rectangle_filled(
-            Screen.WIDTH // 2, Screen.HEIGHT // 2, 500, 128, (0, 0, 0)
-        )
+    def on_draw(self, **kwargs: Any) -> None:
+        self.draw()  # type: ignore
         arcade.draw_text(
-            "Game Over",
-            Screen.WIDTH // 2,
-            Screen.HEIGHT // 2,
-            font_size=40,
+            str(self.click.PRICE),
+            self.x,
+            self.y - self.height // 3,
+            font_name="Kenney Future Narrow",
             anchor_x="center",
             anchor_y="center",
-            color=(200, 100, 100),
         )
-
-    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
-        from .menu import Menu
-
-        self.window.show_view(Menu())
 
 
 class Game(arcade.View):
     def __init__(self, map: str) -> None:
         super().__init__()
 
-        self.scene: arcade.Scene = arcade.Scene.from_tilemap(
-            arcade.load_tilemap(map)
-        )
+        self.map = map
+        tilemap = arcade.load_tilemap(f"./maps/{map}.tmx")
+
+        self.scene: arcade.Scene = arcade.Scene.from_tilemap(tilemap)
+
         self.clock: Clock = Clock()
-        self.timer: Timer = Timer(1, self.clock)
+        self.timer: Timer = Timer(self.clock, 0)
 
         self.select: Sprite | None = None
         self.hover: Sprite | None = None
 
-        self.coin: int = 100
-        self.wave: Iterator[WaveInfo | None] | None = wave()
-        self.wave_num: int = 1
-        self.health: int = 10
+        self.wave = wave()
+        self.display: str = "Wave 0"
+        self.health: int = 100
+        self.coin: int = 10000
 
-    def set_waypoints(self) -> Iterator[Point]:
-        return (
-            Point(*waypoint.position)
-            for waypoint in sorted(
-                self.scene["Waypoints"],
-                key=lambda sprite: sprite.properties["tile_id"],
-            )
-        )
-
-    def on_show_view(self) -> None:
-        Enemy.waypoints = tuple(self.set_waypoints())
-
-        for slot in self.scene["Locations"]:
-            self.scene.add_sprite(
-                "Slots", Slot((slot.center_x, slot.center_y))
-            )
+        for slot in (sprite for sprite in self.scene["Locations"]):
+            self.scene.add_sprite("Slots", Slot(Vector(*slot.position)))
 
         self.scene.remove_sprite_list_by_name("Locations")
-        self.scene.remove_sprite_list_by_name("Waypoints")
-
         self.scene.add_sprite_list("Coins")
         self.scene.add_sprite_list("Towers")
         self.scene.add_sprite_list("Enemies")
+        self.scene.add_sprite_list("Reinforcements")
         self.scene.add_sprite_list("Particles")
-        self.scene.add_sprite_list("UI")
+
+        self.scene.add_sprite(
+            "UI",
+            Btn(
+                "./assets/UI/Gun.png",
+                Vector(64, 240),
+                MachineGun,
+            ),
+        )
+        self.scene.add_sprite(
+            "UI",
+            Btn("./assets/UI/Canon.png", Vector(64, 152), Canon),
+        )
+        self.scene.add_sprite(
+            "UI",
+            Btn(
+                "./assets/UI/Rocket.png",
+                Vector(64, 64),
+                RocketLauncher,
+            ),
+        )
+        self.scene.add_sprite(
+            "Troop UI",
+            Btn(
+                "./assets/UI/Truck.png",
+                Vector(152, 64),
+                Truck,
+            ),
+        )
+        self.scene.add_sprite(
+            "Troop UI",
+            Btn(
+                "./assets/UI/Tank.png",
+                Vector(240, 64),
+                Tank,
+            ),
+        )
+
+        waypoints = tuple(functions.process_waypoints(tilemap))
 
         Sprite.clock = self.clock
-        Tower.lst = self.scene["Towers"]
-        Coin.lst = self.scene["Coins"]
-        Particle.lst = self.scene["Particles"]
-        Enemy.health = self.health
-        Rocket.lst = self.scene["Particles"]
+        Enemy.sprite_list = self.scene["Enemies"]
+        Enemy.targets = self.scene["Reinforcements"]
+        Enemy.waypoints = waypoints
 
-    def on_draw(self) -> None:
+        Tank.timer = None
+        Truck.timer = None
+        Reinforcement.sprite_list = self.scene["Reinforcements"]
+        Reinforcement.waypoints = tuple(reversed(waypoints))
+        Reinforcement.targets = self.scene["Enemies"]
+
+        Coin.sprite_list = self.scene["Coins"]
+        Particle.sprite_list = self.scene["Particles"]
+        Tower.sprite_list = self.scene["Towers"]
+        Tower.targets = self.scene["Enemies"]
+
+    def on_draw(self):
         self.clear()
         self.scene.draw()  # type: ignore
 
-        if isinstance(self.select, Enemy):
-            self.select = None if self.select.health <= 0 else self.select
+        coinbar_draw(self.coin)
+        wavebar_draw(self.display)
+        healthbar_draw(self.health)
 
-        if self.hover and not self.select:
-            self.hover.on_select_draw()  # type: ignore
+        if self.hover and isinstance(self.hover, (Entity, Slot)):
+            self.hover.on_hover_draw()
 
-        elif self.select:
-            self.select.on_select_draw()  # type: ignore
+        if self.select and isinstance(self.select, Entity):
+            if (
+                self.select in self.scene["Enemies"]
+                or self.select in self.scene["Reinforcements"]
+            ):
+                self.select.on_hover_draw()
+            else:
+                self.select = None
 
-        for i in self.scene["Enemies"]:
-            if isinstance(i, Tank):
-                i.turret.draw()  # type: ignore
+        if self.select and isinstance(self.select, Slot):
+            if self.select.turret:
+                arcade.draw_circle_filled(
+                    *self.select.xy.convert(),
+                    radius=self.select.turret.range,
+                    color=(0, 0, 0, 80),
+                )
+                self.select.on_hover_draw()
+            else:
+                self.select.draw_hit_box(line_thickness=2)
+                for i in self.scene["UI"]:
+                    if isinstance(i, Btn):
+                        if i.click.affordable(self.coin):
+                            i.alpha = 255
+                        else:
+                            i.alpha = 100
+        else:
+            for i in self.scene["UI"]:
+                i.alpha = 100
 
-        arcade.draw_lrtb_rectangle_filled(0, 200, 92, 0, (0, 0, 0))
-        arcade.draw_text(
-            f"Coins: {self.coin}",
-            width=150,
-            anchor_y="center",
-            font_size=16,
-            start_x=25,
-            start_y=25,
-        )
-        arcade.draw_text(
-            f"Health: {self.health}",
-            width=150,
-            anchor_y="center",
-            font_size=16,
-            start_x=25,
-            start_y=50,
-        )
-        arcade.draw_text(
-            f"Wave: {self.wave_num}",
-            width=150,
-            anchor_y="center",
-            font_size=16,
-            start_x=25,
-            start_y=75,
-        )
+        for i in self.scene["UI"]:
+            if isinstance(i, Btn):
+                i.on_draw()
+
+        for i in self.scene["Troop UI"]:
+            if isinstance(i, Btn):
+                i.on_draw()
+                if i.click.affordable(self.coin):
+                    i.alpha = 255
+                else:
+                    i.alpha = 100
 
     def on_update(self, delta_time: float) -> None:
-        if self.health <= 0 or (
-            self.wave is None and not len(self.scene["Enemies"])
-        ):
-            self.window.show_view(GameOver())
-
-        self.clock.update(delta_time)
-        self.scene.on_update(delta_time)
-        self.health = Enemy.health
-
-        Tower.targets = self.scene.get_sprite_list("Enemies")
-        Rocket.targets = self.scene.get_sprite_list("Enemies")
-        TankCanon.targets = self.scene.get_sprite_list("Slots")
-
-        if self.timer.available():
-            try:
-                wave_data = next(self.wave)
-            except StopIteration:
-                self.timer.delay = 0
-                self.wave = None
-                return
-
-            if wave_data is None:
-                self.wave_num += 1
-                self.timer.delay = 10000
-                self.timer.update()
-                return
-
-            enemy, delay = wave_data
-
-            self.scene.add_sprite("Enemies", enemy())
-            self.timer.delay = delay
-            self.timer.update()
-
-    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
-        if data := arcade.get_sprites_at_point((x, y), self.scene["Enemies"]):
-            self.select = data[-1]  # type:ignore
+        if self.health <= 0:
+            self.window.show_view(menu.Defeat())
+            return
+        elif len(self.scene["Enemies"]) == 0 and self.timer.duration < 0:
+            self.window.show_view(menu.Victory(self.map))
             return
 
+        self.clock.update(delta_time)
+        self.scene.update()
+
+        for sprite in (
+            sprite
+            for sprite in self.scene["Enemies"]
+            if isinstance(sprite, Enemy) and sprite.is_end()
+        ):
+            self.health -= sprite.on_end()
+
+        if not self.timer.available():
+            return
+
+        try:
+            wave_info = next(self.wave)
+        except StopIteration:
+            self.timer.duration = -1
+            return
+
+        if isinstance(wave_info, int):
+            self.timer.duration = wave_info
+            return
+        elif isinstance(wave_info, str):
+            self.display = wave_info
+            self.coin += int(wave_info[-2:]) * 10
+        else:
+            wave_info()
+
+        self.timer.duration = 0
+        self.timer.update()
+
+    def on_mouse_press(self, x: int, y: int, button: int, *args: Any) -> None:
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            if a := arcade.get_sprites_at_point(
+                (x, y), self.scene["Troop UI"]
+            ):
+                if (
+                    isinstance(a[-1], Btn)
+                    and issubclass(a[-1].click, Reinforcement)
+                    and a[-1].click.affordable(self.coin)
+                ):
+                    a[-1].click()
+                    a[-1].click.timer.update()
+                    self.coin -= a[-1].click.PRICE
+                    return
+
+            if (
+                self.select
+                and isinstance(self.select, Slot)
+                and (
+                    a := arcade.get_sprites_at_point((x, y), self.scene["UI"])
+                )
+                and not self.select.turret
+            ):
+                if (
+                    isinstance(a[-1], Btn)
+                    and issubclass(a[-1].click, Tower)
+                    and a[-1].click.affordable(self.coin)
+                ):
+                    self.select.turret = a[-1].click(self.select.xy)
+                    self.coin -= self.select.turret.PRICE
+
+            self.on_select((x, y))
+        elif button == arcade.MOUSE_BUTTON_RIGHT:
+            if (
+                (
+                    s := arcade.get_sprites_at_point(
+                        (x, y), self.scene["Slots"]
+                    )
+                )
+                and isinstance(s[-1], Slot)
+                and s[-1].turret
+            ):
+                self.coin += s[-1].turret.on_sell()
+                s[-1].turret = None
+            self.select = None
+
+    def on_select(self, xy: tuple[int, int]):
         if (
-            data := arcade.get_sprites_at_point((x, y), self.scene["Slots"])
-        ) and not self.select:
-            slot: Slot = data[-1]  # type: ignore
-
-            if button == arcade.MOUSE_BUTTON_LEFT and not slot.turret:
-                tower = Canon(slot.position)
-            elif button == arcade.MOUSE_BUTTON_MIDDLE and not slot.turret:
-                tower = RocketLauncher(slot.position)
-            elif button == arcade.MOUSE_BUTTON_RIGHT and not slot.turret:
-                tower = MachineGun(slot.position)
-            elif button == arcade.MOUSE_BUTTON_RIGHT and slot.turret:
-                self.coin += slot.turret.price // 2
-                slot.turret.kill()
-                slot.turret = None
-                self.select = None
-                return
-            else:
-                self.select = slot
-                return
-
-            if slot.turret or self.coin - tower.price < 0:
-                tower.kill()
-                return
-
-            self.coin -= tower.price
-            slot.turret = tower
+            select := self.mouse_over(xy, self.scene["Slots"])
+            or (select := self.mouse_over(xy, self.scene["Enemies"]))
+            or (select := self.mouse_over(xy, self.scene["Reinforcements"]))
+        ):
+            self.select = select
+            return
 
         self.select = None
 
-    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
-        coin: Coin
-        for coin in self.scene["Coins"]:  # type: ignore
-            p = Point(*coin.position)
-            p2 = Point(x, y)
+    def on_mouse_motion(self, x: int, y: int, *args: Any) -> None:
+        self.on_hover((x, y))
+        if a := arcade.get_sprites_at_point((x, y), self.scene["Coins"]):
+            if isinstance(a[-1], Coin):
+                self.coin += a[-1].on_collect()
 
-            if p.within(p2, range=64):
-                angle: float = -atan2(x - p.x, y - p.y)
-
-                coin.x -= 1 * sin(angle)
-                coin.y += 1 * cos(angle)
-
-        if info := arcade.get_sprites_at_point((x, y), self.scene["Coins"]):
-            coin: Coin = info[-1]  # type: ignore
-            self.coin = coin.on_collect(self.coin)
-            return
-
-        if data := arcade.get_sprites_at_point((x, y), self.scene["Enemies"]):
-            enemy: Enemy = data[-1]  # type: ignore
-            self.hover = enemy
+    def on_hover(self, xy: tuple[int, int]) -> None:
+        if (
+            (hover := self.mouse_over(xy, self.scene["Slots"]))
+            or (hover := self.mouse_over(xy, self.scene["Enemies"]))
+            or (hover := self.mouse_over(xy, self.scene["Reinforcements"]))
+        ):
+            self.hover = hover
             return
 
         self.hover = None
+
+    @staticmethod
+    def mouse_over(
+        xy: tuple[int, int], lst: arcade.SpriteList
+    ) -> Sprite | None:
+        if sprites := [
+            sprite
+            for sprite in arcade.get_sprites_at_point(xy, lst)
+            if isinstance(sprite, Sprite)
+        ]:
+            if len(sprites) >= 2 and isinstance(sprites[-1], TankCanon):
+                return sprites[-2]
+            return sprites[-1]

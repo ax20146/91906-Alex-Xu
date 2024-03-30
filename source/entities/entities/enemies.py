@@ -48,45 +48,45 @@ class Enemy(Entity):
 @final
 class Soldier(Enemy):
     FILENAME = "./assets/Entities/Troops/Soldier.png"
-    HEALTH = 20
-    SPEED = 1
-    DROPS = Drops(particles.coins.Bronze, 2)
+    HEALTH = 10
+    SPEED = 2
+    DROPS = Drops(particles.coins.Bronze, 1)
 
 
 @final
 class Zombie(Enemy):
     FILENAME = "./assets/Entities/Troops/Zombie.png"
-    HEALTH = 10
-    SPEED = 2
-    DROPS = Drops(particles.coins.Bronze, 3)
+    HEALTH = 8
+    SPEED = 3
+    DROPS = Drops(particles.coins.Bronze, 2)
 
 
 @final
 class Knight(Enemy):
     FILENAME = "./assets/Entities/Troops/Knight.png"
-    HEALTH = 40
-    SPEED = 0.5
+    HEALTH = 50
+    SPEED = 1
     DROPS = Drops(particles.coins.Gold, 1)
 
 
 @final
 class Robot(Enemy):
     FILENAME = "./assets/Entities/Troops/Robot.png"
-    HEALTH = 30
-    SPEED = 1
+    HEALTH = 35
+    SPEED = 2
     DROPS = Drops(particles.coins.Gold, 2)
 
 
 @final
 class Tank(Enemy):
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
-    HEALTH = 200
+    HEALTH = 250
     SPEED = 1
     DROPS = Drops(particles.coins.Gold, 5)
 
-    FIRERATE = 1000
-    DAMAGE = 10
-    RANGE = 800
+    FIRERATE = 2500
+    DAMAGE = 25
+    RANGE = 4 * 64
 
     def __init__(self) -> None:
         super().__init__()
@@ -100,14 +100,21 @@ class Tank(Enemy):
             targets=self.targets,
         )
         self.sprite_list.append(self.turret)
+        self.turret.face_point(self.movement.target.convert())
 
     def update(self) -> None:
         super().update()
         self.turret.xy = self.xy
 
         self.turret.update()
-        if not self.turret.target:
+        if not self.turret.target and self.turret.reload.available():
             self.turret.face_point(self.movement.target.convert())
+
+    def on_hover_draw(self) -> None:
+        arcade.draw_circle_filled(
+            *self.xy.convert(), radius=self.RANGE, color=(0, 0, 0, 50)
+        )
+        super().on_hover_draw()
 
     def on_die(self) -> None:
         self.turret.kill()

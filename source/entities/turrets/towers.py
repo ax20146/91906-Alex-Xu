@@ -36,6 +36,10 @@ class Tower(Turret):
     def affordable(cls, amount: int) -> bool:
         return amount >= cls.PRICE
 
+    def on_sell(self) -> int:
+        self.kill()
+        return self.PRICE // 2
+
     def attack(self) -> None:
         if not self.target:
             return
@@ -54,10 +58,10 @@ class Tower(Turret):
 @final
 class Canon(Tower):
     FILENAME = "./assets/Entities/Towers/Canon.png"
-    FIRERATE = 1500
-    DAMAGE = 10
-    RANGE = 3.5 * TILE_SIZE
-    PRICE = 10
+    FIRERATE = 2000
+    DAMAGE = 20
+    RANGE = 4 * TILE_SIZE
+    PRICE = 35
 
 
 @final
@@ -65,17 +69,17 @@ class MachineGun(Tower):
     FILENAME = "./assets/Entities/Towers/Gun.png"
     FIRERATE = 150
     DAMAGE = 1
-    RANGE = 2 * TILE_SIZE
-    PRICE = 10
+    RANGE = 3 * TILE_SIZE
+    PRICE = 20
 
 
 @final
 class RocketLauncher(Tower):
     FILENAME = "./assets/Entities/Towers/Rocket.png"
-    FIRERATE = 3000
-    DAMAGE = 20
+    FIRERATE = 3500
+    DAMAGE = 15
     RANGE = 4 * TILE_SIZE
-    PRICE = 10
+    PRICE = 60
 
     def attack(self) -> None:
         if not self.target:

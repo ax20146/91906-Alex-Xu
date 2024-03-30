@@ -39,4 +39,4 @@ class Gold(Coin):
 @final
 class Bronze(Coin):
     FILENAME = "./assets/Entities/Coins/Bronze.png"
-    VALUE = 1
+    VALUE = 2

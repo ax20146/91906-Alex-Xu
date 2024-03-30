@@ -14,9 +14,9 @@ class Timer:
 
     def available(self) -> bool:
         return (
-            self._clock.time - self._previous >= self.duration
-            if self.duration > 0
-            else False
+            False
+            if self.duration < 0
+            else self._clock.time - self._previous >= self.duration
         )
 
     def update(self) -> None:

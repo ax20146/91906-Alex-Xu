@@ -4,7 +4,18 @@
 import arcade
 
 from ...utils import Movement, Sprite, Vector
+from ...utils.constants import (
+    STAT_UI_HEIGHT,
+    STAT_UI_MARGIN,
+    STAT_UI_OFFSET_LARGE,
+    STAT_UI_OFFSET_SMALL,
+    STAT_UI_WIDTH,
+    UI_BACKGROUND_COLOUR,
+    UI_HEALTHBAR_COLOUR,
+)
 from ...utils.functions import process_pascal_case
+
+FONT = "Kenney Future Narrow"
 
 
 class Entity(Sprite):
@@ -41,37 +52,41 @@ class Entity(Sprite):
     def on_hover_draw(self) -> None:
         arcade.draw_rectangle_filled(
             self.x,
-            self.y + 35,
-            82,
-            5,
-            (0, 0, 0, 180),
+            self.y + STAT_UI_OFFSET_SMALL,
+            STAT_UI_WIDTH + STAT_UI_MARGIN,
+            STAT_UI_HEIGHT + STAT_UI_MARGIN,
+            UI_BACKGROUND_COLOUR,
         )
         arcade.draw_rectangle_filled(
             self.x,
-            self.y + 35,
-            self.health / self.HEALTH * 80,
-            3,
-            (79, 189, 101, 255),
+            self.y + STAT_UI_OFFSET_SMALL,
+            max(self.health, 0) / self.HEALTH * STAT_UI_WIDTH,
+            STAT_UI_HEIGHT,
+            UI_HEALTHBAR_COLOUR,
         )
 
         arcade.draw_rectangle_filled(
-            self.x, self.y + 48, 82, 15, (0, 0, 0, 180)
+            self.x,
+            self.y + STAT_UI_OFFSET_LARGE,
+            STAT_UI_WIDTH + STAT_UI_MARGIN,
+            (STAT_UI_HEIGHT + STAT_UI_MARGIN) * 3,
+            UI_BACKGROUND_COLOUR,
         )
         arcade.draw_text(
             f"{process_pascal_case(self.__class__.__name__)}:",
-            self.x - 40,
-            self.y + 50,
+            self.x - STAT_UI_WIDTH // 2,
+            self.y + STAT_UI_OFFSET_LARGE + 2,
+            font_name=FONT,
             font_size=8,
-            bold=True,
             anchor_x="left",
             anchor_y="center",
         )
         arcade.draw_text(
-            f"{self.health}/{self.HEALTH}",
-            self.x + 40,
-            self.y + 50,
+            f"{max(self.health, 0)} / {self.HEALTH}",
+            self.x + STAT_UI_WIDTH // 2,
+            self.y + STAT_UI_OFFSET_LARGE + 2,
+            font_name=FONT,
             font_size=8,
-            bold=True,
             anchor_x="right",
             anchor_y="center",
         )

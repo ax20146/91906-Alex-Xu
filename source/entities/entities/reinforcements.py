@@ -3,7 +3,7 @@
 
 import arcade
 
-from ...utils import Vector
+from ...utils import Timer, Vector
 from ...utils.types import ClassVar, final
 from .. import turrets
 from .enemies import Enemy
@@ -14,11 +14,13 @@ class Reinforcement(Entity):
     sprite_list: ClassVar[arcade.SpriteList]
     waypoints: ClassVar[tuple[Vector, ...]]
     targets: ClassVar[arcade.SpriteList]
+    timer = None
 
     FILENAME: ClassVar[str]
     HEALTH: ClassVar[int]
     SPEED: ClassVar[float]
     PRICE: ClassVar[int]
+    COOLDOWN: ClassVar[int]
 
     def __init__(self) -> None:
         super().__init__(
@@ -32,7 +34,10 @@ class Reinforcement(Entity):
 
     @classmethod
     def affordable(cls, amount: int) -> bool:
-        return amount >= cls.PRICE
+        if not cls.timer:
+            cls.timer = Timer(cls.clock, cls.COOLDOWN)
+
+        return amount >= cls.PRICE and cls.timer.available()
 
     def on_collide(self) -> None:
         if not (
@@ -54,26 +59,30 @@ class Reinforcement(Entity):
         super().update()
         self.on_collide()
 
-        if self.is_end():
+        if self.is_end() or self.is_dead():
             self.on_die()
 
 
 @final
-class ArmourCar(Reinforcement):
+class Truck(Reinforcement):
     FILENAME = "./assets/Entities/Vehicles/TankSmall.png"
-    HEALTH = 50
-    SPEED = 1
+    HEALTH = 40
+    SPEED = 2
+    PRICE = 35
+    COOLDOWN = 5000
 
 
 @final
 class Tank(Reinforcement):
     FILENAME = "./assets/Entities/Vehicles/TankSmall.png"
-    HEALTH = 80
+    HEALTH = 75
     SPEED = 1
+    PRICE = 75
+    COOLDOWN = 10000
 
-    FIRERATE = 10
+    FIRERATE = 2000
     DAMAGE = 10
-    RANGE = 500
+    RANGE = 3.5 * 64
 
     def __init__(self) -> None:
         super().__init__()
@@ -87,14 +96,21 @@ class Tank(Reinforcement):
             targets=self.targets,
         )
         self.sprite_list.append(self.turret)
+        self.turret.face_point(self.movement.target.convert())
 
     def update(self) -> None:
         super().update()
         self.turret.xy = self.xy
 
         self.turret.update()
-        if not self.turret.target:
+        if not self.turret.target and self.turret.reload.available():
             self.turret.face_point(self.movement.target.convert())
+
+    def on_hover_draw(self) -> None:
+        arcade.draw_circle_filled(
+            *self.xy.convert(), radius=self.RANGE, color=(0, 0, 0, 50)
+        )
+        super().on_hover_draw()
 
     def on_die(self) -> None:
         self.turret.kill()
