@@ -47,6 +47,9 @@ class Vector:
             min(max(self.y, lower.y), upper.y),
         )
 
+    def round(self, ndigits: int = 0) -> "Vector":
+        return self.__class__(round(self.x, ndigits), round(self.y, ndigits))
+
     def within(self, vector: "Vector", range: float) -> bool:
         return (self - vector).length() <= range
 

@@ -3,7 +3,7 @@
 
 import arcade
 
-from ...utils import Vector
+from ...utils import Movement, Vector
 from ...utils.constants import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE
 from ...utils.types import ClassVar, final
 from .particles import Particle
@@ -24,10 +24,20 @@ class Coin(Particle):
                 Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT)
             ),
         )
+        self.movement: Movement = Movement(self, Vector(), 3)
+
+    def on_attract(self, position: Vector) -> None:
+        self.movement.update_target(position)
 
     def on_collect(self) -> int:
         self.kill()
         return self.VALUE
+
+    def update(self) -> None:
+        super().update()
+
+        if self.xy.within(self.movement.target, 64):
+            self.movement.move()
 
 
 @final

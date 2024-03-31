@@ -36,6 +36,7 @@ class Reinforcement(Entity):
     def affordable(cls, amount: int) -> bool:
         if not cls.timer:
             cls.timer = Timer(cls.clock, cls.COOLDOWN)
+            cls.timer._previous = -cls.timer.duration
 
         return amount >= cls.PRICE and cls.timer.available()
 

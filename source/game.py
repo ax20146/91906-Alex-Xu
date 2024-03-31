@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any
 
 import arcade
 import arcade.gui
@@ -60,7 +60,7 @@ class Game(arcade.View):
         self.wave = wave()
         self.display: str = "Wave 0"
         self.health: int = 100
-        self.coin: int = 10000
+        self.coin: int = 20
 
         for slot in (sprite for sprite in self.scene["Locations"]):
             self.scene.add_sprite("Slots", Slot(Vector(*slot.position)))
@@ -179,6 +179,24 @@ class Game(arcade.View):
                 else:
                     i.alpha = 100
 
+        if (
+            isinstance(self.hover, Btn)
+            and isinstance(self.select, Slot)
+            and issubclass(self.hover.click, Tower)
+            and self.hover.click.affordable(self.coin)
+        ):
+            arcade.draw_circle_filled(
+                self.select.x,
+                self.select.y,
+                self.hover.click.RANGE,
+                (21, 19, 21, 100),
+            )
+            arcade.draw_scaled_texture_rectangle(
+                self.select.x,
+                self.select.y,
+                texture=arcade.load_texture(self.hover.click.FILENAME),
+            )
+
     def on_update(self, delta_time: float) -> None:
         if self.health <= 0:
             self.window.show_view(menu.Defeat())
@@ -277,6 +295,14 @@ class Game(arcade.View):
 
     def on_mouse_motion(self, x: int, y: int, *args: Any) -> None:
         self.on_hover((x, y))
+
+        for coin in (
+            sprite
+            for sprite in self.scene["Coins"]
+            if isinstance(sprite, Coin)
+        ):
+            coin.on_attract(Vector(x, y))
+
         if a := arcade.get_sprites_at_point((x, y), self.scene["Coins"]):
             if isinstance(a[-1], Coin):
                 self.coin += a[-1].on_collect()
@@ -286,6 +312,7 @@ class Game(arcade.View):
             (hover := self.mouse_over(xy, self.scene["Slots"]))
             or (hover := self.mouse_over(xy, self.scene["Enemies"]))
             or (hover := self.mouse_over(xy, self.scene["Reinforcements"]))
+            or (hover := self.mouse_over(xy, self.scene["UI"]))
         ):
             self.hover = hover
             return

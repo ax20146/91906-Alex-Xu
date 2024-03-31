@@ -25,7 +25,7 @@ class Movement:
             self._sprite.xy += movement
             return
 
-        self._sprite.xy += movement.normalise() * self._speed
+        self._sprite.xy += (movement.normalise() * self._speed).round()
 
     def rotate(self) -> None:
         self._sprite.face_point(self.target.convert())

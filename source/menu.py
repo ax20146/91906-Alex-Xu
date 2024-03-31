@@ -158,10 +158,38 @@ class Menu(arcade.View):
         )
         self.ui.add(arcade.gui.UIAnchorWidget(child=ui))  # type: ignore
 
-        # ui = Button("Help", lambda: print("Help"))
-        # self.ui.add(  # type: ignore
-        #     arcade.gui.UIAnchorWidget(child=ui, anchor_y="bottom", align_y=50)
-        # )
+        info = [
+            "Select empty slot to place towers",
+            "Right click on a tower to sell",
+            "Reinforcements have cooldowns",
+            "Click on enemies or reinforcements to permanently view stats",
+            "Rocket Launcher is slow, so it could miss the target!",
+            "Rocket Launcher deal splash damage",
+            "Tower slots are limited so use them wisely!",
+            "Coins are attracted to teh cursor within a certain range!",
+        ]
+        self.info: str = info[0]
+
+        def update_info():
+            self.info = random.choice(info)
+
+        import random
+
+        ui = Button(
+            "?",
+            lambda: update_info(),
+            width=FONT_MEDIUM,
+            height=FONT_MEDIUM,
+        )
+        self.ui.add(  # type: ignore
+            arcade.gui.UIAnchorWidget(
+                child=ui,
+                anchor_x="left",
+                anchor_y="bottom",
+                align_x=FONT_MEDIUM,
+                align_y=FONT_MEDIUM,
+            )
+        )
 
     def on_hide_view(self) -> None:
         self.ui.disable()
@@ -172,5 +200,14 @@ class Menu(arcade.View):
         arcade.draw_lrtb_rectangle_filled(
             0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, (0, 0, 0, 100)
         )
-
         self.ui.draw()
+
+        arcade.draw_text(
+            self.info,
+            SCREEN_WIDTH // 2,
+            FONT_MEDIUM,
+            font_size=FONT_MEDIUM // 2,
+            font_name=FONT,
+            anchor_x="center",
+            anchor_y="bottom",
+        )
