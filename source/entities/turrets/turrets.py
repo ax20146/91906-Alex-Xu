@@ -52,7 +52,7 @@ class Turret(Sprite):
         self.reload: Timer = Timer(self.clock, self.FIRERATE // 3)
 
     def attack(self) -> None:
-        """Function called when turret attacks"""
+        """Function called when turret attacks."""
 
         # Check if turret has a target
         if not self.target:

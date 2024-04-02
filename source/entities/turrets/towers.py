@@ -56,7 +56,7 @@ class Tower(turrets.Turret):
         return amount >= cls.PRICE
 
     def attack(self) -> None:
-        """Function called when tower attacks"""
+        """Function called when tower attacks."""
         super().attack()
 
         # Check if turret has a target
@@ -121,7 +121,7 @@ class RocketLauncher(Tower):
     PROJECTILE_SPEED = 3
 
     def attack(self) -> None:
-        """Function called when rocket launcher attacks"""
+        """Function called when rocket launcher attacks."""
 
         # Check if turret has a target
         if not self.target:

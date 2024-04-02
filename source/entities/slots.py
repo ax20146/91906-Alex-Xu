@@ -1,41 +1,102 @@
 # /entities/slots.py
+"""`Slots` module containing the `Slot` sprite class."""
 
 
+# Import 3rd-Party Dependencies
 import arcade
 
+# Import Local Dependencies
 from ..utils import Sprite, Vector
-from ..utils.functions import process_pascal_case
-from ..utils.types import final
+from ..utils.constants import (
+    ANCHOR_CENTER,
+    BLACK,
+    FONT,
+    FONT_SMALL,
+    STAT_UI_LARGE_HEIGHT,
+    STAT_UI_OFFSET,
+    STAT_UI_OUTLINE,
+    STAT_UI_WIDTH,
+    TRANSPARENT_DARK,
+    TRANSPARENT_LIGHT,
+    WHITE,
+)
 from .turrets import towers
 
 
-@final
+# Define Slot class
 class Slot(Sprite):
-    def __init__(self, position: Vector) -> None:
-        super().__init__(
-            filename="./assets/Entities/Slot.png",
-            position=position,
-        )
+    """`Slot` object represents a slot sprite.
 
-        self.turret: towers.Tower | None = None
+    Inherited from `Sprite`.
+
+    Implements the functionality of a slot sprite.
+    """
+
+    # Define class constants
+    FILENAME = "./assets/Entities/Slot.png"
+
+    def __init__(self, position: Vector) -> None:
+        """Initialise a `Slot` sprite object.
+
+        Args:
+            position (Vector): The position of sprite.
+        """
+
+        # Initialised parent class
+        super().__init__(self.FILENAME, position)
+
+        # Define attributes of slot
+        self.tower: towers.Tower | None = None
+
+    def on_sell(self) -> int:
+        """Event called to sell the tower object.
+
+        Returns:
+            int: The coin amount gained from selling.
+        """
+
+        if not self.tower:
+            return 0
+
+        self.tower.kill()
+        return self.tower.PRICE // 2
 
     def on_hover_draw(self) -> None:
-        name: str = (
-            process_pascal_case(self.turret.__class__.__name__)
-            if self.turret
-            else "Slot"
-        )
+        """Event called when slot is hovered."""
 
-        arcade.draw_text(
-            name,
+        # Draw the tower/slot name
+        arcade.draw_rectangle_filled(
             self.x,
-            self.y + 35,
-            font_size=8,
-            color=(50, 50, 50),
-            anchor_x="center",
-            anchor_y="center",
+            self.y + STAT_UI_OFFSET,
+            width=STAT_UI_WIDTH,
+            height=STAT_UI_LARGE_HEIGHT,
+            color=TRANSPARENT_DARK,
+        )
+        arcade.draw_text(
+            self.tower.name() if self.tower else self.name(),
+            self.x,
+            self.y + STAT_UI_OFFSET,
+            font_name=FONT,
+            font_size=FONT_SMALL,
+            anchor_x=ANCHOR_CENTER,
+            anchor_y=ANCHOR_CENTER,
+            color=WHITE,
         )
 
-        self.draw_hit_box((50, 50, 50), line_thickness=2)
+        # Outline the slot
+        self.draw_hit_box(BLACK, STAT_UI_OUTLINE)
 
-    def on_select_draw(self) -> None: ...
+    def on_select_draw(self) -> None:
+        """Event called when slot is selected."""
+
+        # Draw the range of tower
+        if self.tower:
+            arcade.draw_circle_filled(
+                self.x,
+                self.y,
+                radius=self.tower.RANGE,
+                color=TRANSPARENT_LIGHT,
+            )
+
+        # Draw the tower/slot name
+        self.on_hover_draw()
