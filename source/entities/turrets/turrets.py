@@ -1,66 +1,104 @@
 # /entities/turrets/turrets.py
+"""`Turrets` module containing the `Turret` sprite class."""
 
 
+# Import 3rd-Party Dependencies
 import arcade
 
+# Import Local Dependencies
 from ...utils import Sprite, Timer, Vector
-from .. import entities
+from ...utils.types import ClassVar
+from ..entities import entities
 
 
+# Define Turret class
 class Turret(Sprite):
-    def __init__(
-        self,
-        *,
-        filename: str,
-        position: Vector,
-        firerate: int,
-        damage: int,
-        range: float,
-        targets: arcade.SpriteList
-    ) -> None:
-        super().__init__(
-            filename=filename,
-            position=position,
-        )
+    """`Turret` object represents a turret sprite.
 
-        self.timer: Timer = Timer(self.clock, firerate)
-        self.reload: Timer = Timer(self.clock, firerate // 3)
+    Inherited from `Sprite`.
 
-        self.targets: arcade.SpriteList = targets
-        self.target: entities.Entity | None = None
-        self.damage: int = damage
-        self.range: float = range
+    Implements the base functionality of a Turret sprite.
+    """
+
+    # Define class attributes expected to be override
+    targets: ClassVar[arcade.SpriteList]
+
+    # Define class constants
+    LENGTH_RATIO = 1.2
+    PARTICLE_LIFETIME = 150
+
+    # Define class constants expected to be override
+    FILENAME: ClassVar[str]
+    FIRERATE: ClassVar[int]
+    DAMAGE: ClassVar[int]
+    RANGE: ClassVar[int]
+
+    def __init__(self, position: Vector, *, add: bool = False) -> None:
+        """Initialise a `Turret` sprite object.
+
+        Args:
+            position (Vector): The position of sprite.
+            add (bool, optional):
+            The option to add to sprite list during initialisation.
+                Defaults to False.
+        """
+
+        # Initialised parent class
+        super().__init__(self.FILENAME, position, add=add)
+
+        # Define attributes of turret
+        self.target: entities.Entity | None
+        self.timer: Timer = Timer(self.clock, self.FIRERATE)
+        self.reload: Timer = Timer(self.clock, self.FIRERATE // 3)
+
+    def attack(self) -> None:
+        """Function called when turret attacks."""
+
+        # Check if turret has a target
+        if not self.target:
+            return
+
+        # Deduct health from enemy
+        self.target.health -= self.DAMAGE
 
     def update_target(self) -> None:
+        """Update the turret target entity."""
+
         self.target = None
 
-        for sprite in (
+        # Determine the target entity who is travelled the furthest
+        for target in (
             sprite
             for sprite in self.targets
             if isinstance(sprite, entities.Entity)
-            and self.xy.within(sprite.xy, self.range)
+            and self.xy.within(sprite.xy, self.RANGE)
         ):
-            self.target = self.target or sprite
+            self.target = self.target or target
 
-            condition: bool = sprite.target > self.target.target or (
-                sprite.target == self.target.target
-                and sprite.distance() < self.target.distance()
+            # The condition to determine whether the entity travelled
+            # more distance than current selected target
+            condition: bool = target.target_idx > self.target.target_idx or (
+                target.target_idx == self.target.target_idx
+                and target.distance() < self.target.distance()
             )
 
-            self.target = sprite if condition else self.target
+            # Assign new targets if current target travelled less
+            self.target = target if condition else self.target
 
     def update(self) -> None:
+        """The update functionality for turret class."""
+        super().update()
+
+        # Determine if turret finished reloading and has a target
         self.update_target()
         if not self.reload.available() or not self.target:
             return
 
-        self.face_point(self.target.xy.convert())
+        # Rotate towards the selected target
+        self.rotate(self.target.xy)
+
+        # Determine if turret is able to attack
         if self.timer.available():
             self.attack()
-            self.timer.update()
             self.reload.update()
-
-    def attack(self) -> None:
-        if not self.target:
-            return
-        self.target.health -= self.damage
+            self.timer.update()

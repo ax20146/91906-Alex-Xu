@@ -1,5 +1,8 @@
-# source/wave.py
+# /wave.py
+"""`Wave` module containing the wave generator function."""
 
+
+# Import Local Dependencies
 from .entities.entities.enemies import (
     Enemy,
     Knight,
@@ -11,81 +14,119 @@ from .entities.entities.enemies import (
 from .utils.types import Iterator
 
 
-def wave() -> Iterator[type[Enemy] | str | int]:
-    yield "Wave 0"
-    yield 3000
+# Define Wave generator function
+def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
+    """`Wave` generator function.
+    Yield different information regarding waves.
 
-    yield "Wave 1"
+    Yields:
+        Iterator[type[Enemy] | tuple[str, int] | int]:
+        The wave generator `iterator` object yield:
+            type[Enemy]: The enemy entity that should be spawned.
+            tuple[str, int]: The display text & coin rewarded for wave.
+            int: The time (in milliseconds) to delay the next yield.
+
+    NOTE: The `wave` generator function contain many
+    literal-strings, and 'arbitrary' integer values.
+    However this approach of manually hand crafting each part of the
+    game's progression allows finer control of the game's difficulty,
+    whilst also allowing easier balancing changes made to the game.
+    """
+
+    # Wave 0 Data
+    yield ("Wave 0", 15)
+    yield 5000
+
+    # Wave 1 Data
+    yield ("Wave 1", 20)
     for _ in range(3):
         yield Soldier
         yield 1000
-    yield 7000
+    yield 4000
 
-    yield "Wave 2"
-    for _ in range(10):
+    # Wave 2 Data
+    yield ("Wave 2", 25)
+    for _ in range(8):
         yield Soldier
-        yield 800
-    yield 7200
+        yield 1000
+    yield 4000
 
-    yield "Wave 3"
+    # Wave 3 Data
+    yield ("Wave 3", 30)
+    for _ in range(5):
+        yield Zombie
+        yield 400
+    yield 4600
+
+    # Wave 4 Data
+    yield ("Wave 4", 35)
     for _ in range(5):
         yield Zombie
         yield 500
-    yield 9500
-
-    yield "Wave 4"
-    for _ in range(8):
-        yield Zombie
-        yield 1000
-    for _ in range(15):
+    for _ in range(10):
         yield Soldier
         yield 800
-    yield 9200
+    yield 4200
 
-    yield "Wave 5"
+    # Wave 5 Data
+    yield ("Wave 5", 40)
     for _ in range(8):
         yield Knight
-        yield 2000
-    yield 10000
+        yield 1500
+    yield 6500
 
-    yield "Wave 6"
+    # Wave 6 Data
+    yield ("Wave 6", 50)
     for _ in range(10):
         yield Soldier
         yield 1000
     for _ in range(10):
         yield Knight
-        yield 1500
-    yield 10500
+        yield 1000
+    yield 7000
 
-    yield "Wave 7"
-    for _ in range(8):
+    # Wave 7 Data
+    yield ("Wave 7", 60)
+    for _ in range(15):
+        yield Zombie
+        yield 250
+    for _ in range(15):
+        yield Soldier
+        yield 500
+    for _ in range(12):
+        yield Knight
+        yield 800
+    yield 7200
+
+    # Wave 8 Data
+    yield ("Wave 8", 80)
+    for _ in range(25):
         yield Zombie
         yield 500
-    for _ in range(15):
+    for _ in range(25):
         yield Soldier
         yield 800
-    for _ in range(10):
-        yield Knight
-        yield 1000
-    yield 10500
-
-    yield "Wave 8"
-    for _ in range(25):
-        yield Soldier
-        yield 1000
-    for _ in range(10):
+    for _ in range(8):
         yield Robot
-        yield 1500
-    yield 13500
+        yield 1000
+    yield 9000
 
-    yield "Wave 9"
-    for _ in range(25):
+    # Wave 9 Data
+    yield ("Wave 9", 100)
+    for _ in range(20):
         yield Robot
         yield 1200
     for _ in range(25):
         yield Knight
-        yield 1500
-    yield 13500
+        yield 800
+    yield 9200
 
-    yield "Wave 10"
+    # Wave 10 Data
+    yield ("Wave 10", 120)
+    for _ in range(50):
+        yield Soldier
+        yield 500
+    for _ in range(35):
+        yield Knight
+        yield 800
     yield Tank

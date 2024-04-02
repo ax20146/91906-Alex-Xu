@@ -1,11 +1,19 @@
 # /utils/types.py
+"""`Types` module containing utility types."""
 
-from typing import Any, ClassVar, Iterator, NamedTuple, final
 
+# Import Built-in Dependencies
+from typing import Any, Callable, ClassVar, Iterator, TypeVar
+
+# Export Local Types
 __all__: list[str] = [
     "Any",
     "ClassVar",
+    "Callable",
     "Iterator",
-    "NamedTuple",
-    "final",
+    "Type",
 ]
+
+
+# Define generic type
+Type = TypeVar("Type")

@@ -1,62 +1,88 @@
 # /entities/turrets/towers.py
+"""`Towers` module containing the `Tower` sprite class."""
 
 
-import arcade
-
+# Import Local Dependencies
 from ...utils import Vector
 from ...utils.constants import TILE_SIZE
-from ...utils.types import ClassVar, final
-from .. import particles
-from .turrets import Turret
+from ...utils.types import ClassVar
+from ..particles import flames, rockets
+from . import turrets
 
 
-class Tower(Turret):
-    sprite_list: ClassVar[arcade.SpriteList]
-    targets: ClassVar[arcade.SpriteList]
+# Define Tower class
+class Tower(turrets.Turret):
+    """`Tower` object represents a tower turret sprite.
 
-    FILENAME: ClassVar[str]
-    FIRERATE: ClassVar[int]
-    DAMAGE: ClassVar[int]
-    RANGE: ClassVar[float]
+    Inherited from `Turret`.
+
+    Implements the functionality of a tower turret sprite.
+    """
+
+    # Define class attributes expected to be assigned
+    # NOTE: Class attributes expected to be assigned:
+    # sprite_list: ClassVar[arcade.SpriteList]
+    # targets: ClassVar[arcade.SpriteList]
+
+    # Define class constants expected to be override
+    # NOTE: Class constants expected to be override
+    # FILENAME: ClassVar[str]
+    # FIRERATE: ClassVar[int]
+    # DAMAGE: ClassVar[int]
+    # RANGE: ClassVar[int]
     PRICE: ClassVar[int]
 
     def __init__(self, position: Vector) -> None:
-        super().__init__(
-            position=position,
-            filename=self.FILENAME,
-            firerate=self.FIRERATE,
-            damage=self.DAMAGE,
-            range=self.RANGE,
-            targets=self.targets,
-        )
+        """Initialise a `Tower` sprite object.
 
-        self.sprite_list.append(self)
+        Args:
+            position (Vector): The position of sprite.
+        """
+
+        # Initialised parent class
+        super().__init__(position, add=True)
 
     @classmethod
     def affordable(cls, amount: int) -> bool:
+        """Determine whether the tower turret is affordable.
+
+        Args:
+            amount (int): The given amount of coins.
+
+        Returns:
+            bool: Whether it is affordable.
+        """
+
         return amount >= cls.PRICE
 
-    def on_sell(self) -> int:
-        self.kill()
-        return self.PRICE // 2
-
     def attack(self) -> None:
+        """Function called when tower attacks."""
+        super().attack()
+
+        # Check if turret has a target
         if not self.target:
             return
 
-        super().attack()
+        # Calculate the position of particle
         position: Vector = self.xy - (
             self.xy - self.target.xy
-        ).normalise() * (self.height // 1.5)
-        particles.flames.BigFlame(
+        ).normalise() * (self.height // self.LENGTH_RATIO)
+
+        # Instantiate the particle when firing
+        flames.BigFlame(
             position,
             self.angle,
-            min(self.FIRERATE // 2, 200),
+            min(self.FIRERATE // 2, self.PARTICLE_LIFETIME),
         )
 
 
-@final
+# Define Canon tower
 class Canon(Tower):
+    """`Canon` tower turret sprite object.
+
+    Inherited from `Tower`.
+    """
+
     FILENAME = "./assets/Entities/Towers/Canon.png"
     FIRERATE = 2000
     DAMAGE = 20
@@ -64,8 +90,13 @@ class Canon(Tower):
     PRICE = 35
 
 
-@final
+# Define MachineGun tower
 class MachineGun(Tower):
+    """`MachineGun` tower turret sprite object.
+
+    Inherited from `Tower`.
+    """
+
     FILENAME = "./assets/Entities/Towers/Gun.png"
     FIRERATE = 150
     DAMAGE = 1
@@ -73,21 +104,43 @@ class MachineGun(Tower):
     PRICE = 20
 
 
-@final
-class RocketLauncher(Tower):
+# Define Rocket tower
+class Rocket(Tower):
+    """`RocketLauncher` tower turret sprite object.
+
+    Inherited from `Tower`.
+    """
+
     FILENAME = "./assets/Entities/Towers/Rocket.png"
-    FIRERATE = 3500
-    DAMAGE = 15
+    FIRERATE = 3000
+    DAMAGE = 25
     RANGE = 4 * TILE_SIZE
     PRICE = 60
 
+    PROJECTILE_RADIUS = int(TILE_SIZE // 1.5)
+    PROJECTILE_SPEED = 8
+
     def attack(self) -> None:
+        """Function called when rocket launcher attacks."""
+
+        # Check if turret has a target
         if not self.target:
             return
 
-        particles.rockets.Rocket(
+        # Instantiate the rocket when firing
+        rockets.Rocket(
             self.xy,
             self.target.xy,
             targets=self.targets,
             damage=self.DAMAGE,
+            range=self.PROJECTILE_RADIUS,
+            speed=self.PROJECTILE_SPEED,
         )
+
+
+# Define list of all towers mapped to button file
+towers: dict[type[Tower], str] = {
+    Rocket: "./assets/UI/Rocket.png",
+    Canon: "./assets/UI/Canon.png",
+    MachineGun: "./assets/UI/Gun.png",
+}
