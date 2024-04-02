@@ -65,7 +65,7 @@ class Endscreen(View):
         )
 
     def on_mouse_press(self, x: int, y: int, button: int, *args: Any) -> None:
-        """The mouse press event function called every cycle (tick).
+        """The mouse press event function called.
 
         Args:
             x (int): The x position of mouse press.

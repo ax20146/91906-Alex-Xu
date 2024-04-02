@@ -37,7 +37,7 @@ class View(arcade.View):
 
     def on_mouse_press(self, x: int, y: int, button: int, *args: Any) -> None:
         """OVERRIDE:
-        The mouse press event function called every cycle (tick).
+        The mouse press event function called.
 
         Args:
             x (int): The x position of mouse press.
@@ -48,7 +48,7 @@ class View(arcade.View):
 
     def on_mouse_motion(self, x: int, y: int, *args: Any) -> None:
         """OVERRIDE:
-        The mouse motion event function called every cycle (tick).
+        The mouse motion event function called.
 
         Args:
             x (int): The x position of mouse press.

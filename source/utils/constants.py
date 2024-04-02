@@ -2,6 +2,7 @@
 """`Constants` module containing utility constants."""
 
 
+# Define Base Game Constants
 # Define Map & Screen Constants
 TILE_SIZE = 64
 SCREEN_TITLE = "Tower Defender"
@@ -9,7 +10,6 @@ SCREEN_WIDTH = 15 * TILE_SIZE
 SCREEN_HEIGHT = 10 * TILE_SIZE
 SCREEN_HALF_W = SCREEN_WIDTH // 2
 SCREEN_HALF_H = SCREEN_HEIGHT // 2
-
 
 # Define Game Scene Constants
 LAYER_REINFORCEMENTS = "Reinforcements"

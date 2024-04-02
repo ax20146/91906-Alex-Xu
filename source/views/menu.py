@@ -35,24 +35,26 @@ from . import game
 
 # Define Menu class
 class Menu(View):
-    """`Menu` view represents the menu.
+    """`Menu` view represents the game menu view.
 
     Inherited from `View`.
+
+    Implements the functionality of the game menu view.
     """
 
     def __init__(self) -> None:
-        """Initialise a `Menu` view."""
+        """Initialise a `Menu` view object."""
 
         # Initialised parent class
         super().__init__()
 
-        # Define view scene & ui
+        # Define view's scene & ui
         self.ui: arcade.gui.UIManager = arcade.gui.UIManager()
         self.scene: arcade.Scene = arcade.Scene.from_tilemap(
             arcade.load_tilemap("./maps/Hard.tmx")
         )
 
-        # Define view displays, clock, timer
+        # Define display, clock, timer info of the view
         self.display: str = ""
         self.clock: Clock = Clock()
         self.timer: Timer = Timer(self.clock, TIPS_COOLDOWN, initialise=False)
