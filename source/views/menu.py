@@ -25,6 +25,7 @@ from ..utils.constants import (
     SCREEN_TITLE,
     SCREEN_WIDTH,
     TIPS_COOLDOWN,
+    TIPS_DATA,
     TRANSPARENT_DARK,
     WHITE,
 )
@@ -55,9 +56,9 @@ class Menu(View):
         )
 
         # Define display, clock, timer info of the view
-        self.display: str = ""
+        self.display: str = TIPS_DATA[0]
         self.clock: Clock = Clock()
-        self.timer: Timer = Timer(self.clock, TIPS_COOLDOWN, initialise=False)
+        self.timer: Timer = Timer(self.clock, TIPS_COOLDOWN)
 
         # Instantiate buttons based on the game progression data
         buttons: Iterator[arcade.gui.UIPadding] = (
