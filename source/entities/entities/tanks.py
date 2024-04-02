@@ -129,7 +129,11 @@ class Tank(entities.Entity):
         self.canon.update()
 
         # Rotate the tank canon when it has no target
-        if not self.canon.target and self.canon.reload.available():
+        if (
+            not self.canon.target
+            and self.canon.reload.available()
+            and not self.is_end()
+        ):
             self.canon.rotate(self.waypoints[self.target_idx])
 
     def on_select_draw(self) -> None:
