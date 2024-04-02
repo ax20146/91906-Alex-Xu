@@ -34,11 +34,11 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     """
 
     # Wave 0 Data
-    yield ("Wave 0", 20)
+    yield ("Wave 0", 15)
     yield 5000
 
     # Wave 1 Data
-    yield ("Wave 1", 5)
+    yield ("Wave 1", 20)
     for _ in range(3):
         yield Soldier
         yield 1000
