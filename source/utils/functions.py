@@ -1,95 +1,74 @@
 # /utils/functions.py
+"""`Functions` module containing utility functions."""
 
 
-import arcade
+# Import Built-in Dependencies
+from json import dump, load
+from random import choice
 
-from .classes.vector import Vector
-from .constants import (
-    HEALTH,
-    INFO_UI_HEIGHT,
-    INFO_UI_MARGIN,
-    INFO_UI_WIDTH,
-    LAYER_WAYPOINTS,
-    SCREEN_HEIGHT,
-    SCREEN_WIDTH,
-    SMALL_INFO_UI_WIDTH,
-    UI_BACKGROUND_COLOUR,
-    UI_HEALTHBAR_COLOUR,
-)
-from .types import Iterator
-
-FONT = "Kenney Future Narrow"
+# Import Local Dependencies
+from .constants import DATA_PATH, TIPS_DATA
 
 
-def process_pascal_case(string: str) -> str:
-    result: str = string[0]
+# Define Generate Tips function
+def generate_tips() -> str:
+    """Randomly generate and returns and tip for the game.
 
-    for char in string[1:]:
-        result += f" {char}" if char.isupper() else char
+    Returns:
+        str: The randomly generated tip.
+    """
 
-    return result
-
-
-def process_waypoints(tilemap: arcade.TileMap) -> Iterator[Vector]:
-    return (
-        Vector(*waypoint)
-        for waypoint in tilemap.object_lists[LAYER_WAYPOINTS][0].shape
-        if isinstance(waypoint, tuple)
-    )
+    return choice(TIPS_DATA)
 
 
-def small_infobar(text: str, start_x: int):
-    start_y: int = SCREEN_HEIGHT - INFO_UI_HEIGHT - INFO_UI_MARGIN
-    end_x: int = start_x + SMALL_INFO_UI_WIDTH
-    end_y: int = start_y - INFO_UI_HEIGHT
+# Define Data Read function
+def read_data() -> dict[str, bool]:
+    """Read the game progression data from disk.
 
-    arcade.draw_polygon_filled(
-        color=UI_BACKGROUND_COLOUR,
-        point_list=(
-            (start_x, start_y),
-            (end_x, start_y),
-            (end_x - INFO_UI_MARGIN * 4, end_y),
-            (start_x + INFO_UI_MARGIN * 4, end_y),
-        ),
-    )
-    arcade.draw_text(
-        text,
-        (start_x + end_x) // 2,
-        start_y - INFO_UI_HEIGHT // 2,
-        font_name=FONT,
-        anchor_x="center",
-        anchor_y="center",
-    )
+    Returns:
+        dict[str, bool]: The game progression data.
+    """
+
+    # Read data from disk
+    with open(DATA_PATH) as file:
+        return load(file)
 
 
-def healthbar_draw(health: int) -> None:
-    arcade.draw_rectangle_filled(
-        SCREEN_WIDTH // 2,
-        SCREEN_HEIGHT - INFO_UI_HEIGHT // 2,
-        width=INFO_UI_WIDTH,
-        height=INFO_UI_HEIGHT,
-        color=UI_BACKGROUND_COLOUR,
-    )
-    arcade.draw_rectangle_filled(
-        SCREEN_WIDTH // 2,
-        SCREEN_HEIGHT - INFO_UI_HEIGHT // 2,
-        width=(max(health, 0) / HEALTH) * (INFO_UI_WIDTH - INFO_UI_MARGIN),
-        height=INFO_UI_HEIGHT - INFO_UI_MARGIN,
-        color=UI_HEALTHBAR_COLOUR,
-    )
-    arcade.draw_text(
-        f"{max(health, 0)} / {HEALTH}",
-        SCREEN_WIDTH // 2,
-        SCREEN_HEIGHT - 2,
-        font_name=FONT,
-        anchor_x="center",
-        anchor_y="top",
-    )
+# Define Data Write function
+def write_data(data: dict[str, bool]) -> None:
+    """Write the game progression data to disk.
+
+    Args:
+        data (dict[str, bool]): The game progression data.
+    """
+
+    # Write data to disk
+    with open(DATA_PATH, "w") as file:
+        dump(data, file)
 
 
-def wavebar_draw(text: str) -> None:
-    small_infobar(text, SCREEN_WIDTH // 5)
+# Define Data Process function
+def process_data(string: str, data: dict[str, bool]) -> dict[str, bool]:
+    """Process the game progression data.
 
+    Args:
+        string (str): The current game progression.
+        data (dict[str, bool]): The game progression data.
 
-def coinbar_draw(coin: int) -> None:
-    small_infobar(f"${coin:,}", 3 * SCREEN_WIDTH // 5)
+    Returns:
+        dict[str, bool]: A processed game progression data.
+    """
+
+    # Make a copy of the data dictionary
+    data = data.copy()
+
+    # Find the key in data dictionary to update
+    lst: list[str] = list(data)
+    idx: int = lst.index(string) + 1
+
+    # Update the data (if able)
+    if idx < len(lst):
+        data[lst[idx]] = True
+
+    # Return the modified copy of data dictionary
+    return data
