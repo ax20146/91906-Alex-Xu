@@ -46,7 +46,6 @@ class Enemy(entities.Entity):
 
     def on_die(self) -> None:
         """Event called when enemy dies."""
-
         super().on_die()
 
         # Drop the defined coin type & number of coins

@@ -86,4 +86,4 @@ class Bronze(Coin):
     """
 
     FILENAME = "./assets/Entities/Coins/Bronze.png"
-    VALUE = 2
+    VALUE = 1

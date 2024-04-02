@@ -70,14 +70,16 @@ class Reinforcement(entities.Entity):
 
     def update(self) -> None:
         """The update functionality for reinforcement class."""
+
+        # Determine if reinforcement entity should die
+        if self.is_end() or self.is_dead():
+            return self.on_die()
+
+        # Call parent update method
         super().update()
 
         # Check for collision with enemies
         self.on_collide()
-
-        # Determine if reinforcement entity should die
-        if self.is_end() or self.is_dead():
-            self.on_die()
 
 
 # Define Truck reinforcement

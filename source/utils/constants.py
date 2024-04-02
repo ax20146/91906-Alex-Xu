@@ -72,7 +72,6 @@ INFO_UI_HALF_H = INFO_UI_FULL_H // 2
 
 # Define Game Constants
 # Define Initial Gameplay Constants
-GAMEPLAY_COIN = 10
 GAMEPLAY_HEALTH = 100
 
 # Define Game Data Constants

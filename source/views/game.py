@@ -20,7 +20,6 @@ from ..utils.constants import (
     ANCHOR_CENTER,
     FONT,
     FONT_MEDIUM,
-    GAMEPLAY_COIN,
     GAMEPLAY_HEALTH,
     HEALTHBAR_COLOUR,
     INFO_UI_FULL_H,
@@ -87,7 +86,7 @@ class Game(View):
         self.wave = wave()
         self.display: str = ""
         self.health: int = GAMEPLAY_HEALTH
-        self.coin: int = GAMEPLAY_COIN
+        self.coin: int = 0
 
         # Process & setup the game
         self.process_locations()
