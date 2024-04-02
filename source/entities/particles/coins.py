@@ -1,52 +1,89 @@
 # /entities/particles/coins.py
+"""`Coins` module containing the `Coin` particle sprite class."""
 
 
-import arcade
-
-from ...utils import Movement, Vector
+# Import Local Dependencies
+from ...utils import Vector
 from ...utils.constants import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE
-from ...utils.types import ClassVar, final
-from .particles import Particle
+from ...utils.types import ClassVar
+from . import particles
 
 
-class Coin(Particle):
+# Define Coin class
+class Coin(particles.Particle):
+    """`Coin` object represents a coin particle sprite.
+
+    Inherited from `Particle`.
+
+    Implements the functionality of a coin particle sprite.
+    """
+
+    # Define class attributes expected to be assigned
+    # NOTE: Class attributes expected to be assigned:
+    # sprite_list: ClassVar[arcade.SpriteList]
+    target: ClassVar[Vector]
+
+    # Define class constants
     LIFETIME = 8000
-    sprite_list: ClassVar[arcade.SpriteList]
+    COLLECTION_SPEED = 3
+    COLLECTION_RANGE = TILE_SIZE
 
+    # Define class constants expected to be override
     FILENAME: ClassVar[str]
     VALUE: ClassVar[int]
 
     def __init__(self, position: Vector) -> None:
-        super().__init__(
-            filename=self.FILENAME,
-            duration=self.LIFETIME,
-            position=position.randomise(TILE_SIZE).limit(
-                Vector(0, 0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT)
-            ),
-        )
-        self.movement: Movement = Movement(self, Vector(), 3)
+        """Initialise a `Coin` particle sprite object.
 
-    def on_attract(self, position: Vector) -> None:
-        self.movement.update_target(position)
+        Args:
+            position (Vector): The position of sprite.
+        """
+
+        # Initialised parent class
+        super().__init__(
+            self.FILENAME,
+            position.randomise(TILE_SIZE).limit(
+                Vector(), Vector(SCREEN_WIDTH, SCREEN_HEIGHT)
+            ),
+            duration=self.LIFETIME,
+        )
 
     def on_collect(self) -> int:
+        """Event called to collect the coin object.
+
+        Returns:
+            int: The value of the coin.
+        """
+
         self.kill()
         return self.VALUE
 
     def update(self) -> None:
+        """The update functionality for coin class."""
         super().update()
 
-        if self.xy.within(self.movement.target, 64):
-            self.movement.move()
+        # If able move towards the target position
+        if self.xy.within(self.target, self.COLLECTION_RANGE):
+            self.move(self.target, self.COLLECTION_SPEED)
 
 
-@final
+# Define Gold coin
 class Gold(Coin):
+    """`Gold` coin particle sprite object.
+
+    Inherited from `Coin`.
+    """
+
     FILENAME = "./assets/Entities/Coins/Gold.png"
     VALUE = 5
 
 
-@final
+# Define Bronze coin
 class Bronze(Coin):
+    """`Bronze` coin particle sprite object.
+
+    Inherited from `Coin`.
+    """
+
     FILENAME = "./assets/Entities/Coins/Bronze.png"
     VALUE = 2
