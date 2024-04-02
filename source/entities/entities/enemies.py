@@ -1,121 +1,125 @@
 # /entities/entities/enemies.py
+"""`Enemies` module containing the `Enemy` sprite class."""
 
 
+# Import 3rd-Party Dependencies
 import arcade
 
-from ...utils import Vector
-from ...utils.types import ClassVar, NamedTuple, final
-from .. import particles, turrets
-from .entities import Entity
+# Import Local Dependencies
+from ...utils.constants import TILE_SIZE
+from ...utils.types import ClassVar
+from ..particles import coins
+from . import entities, tanks
 
 
-class Drops(NamedTuple):
-    coin: type[particles.coins.Coin]
-    amount: int
+# Define Enemy class
+class Enemy(entities.Entity):
+    """`Enemy` object represents a enemy entity sprite.
 
+    Inherited from `Entity`.
 
-class Enemy(Entity):
-    sprite_list: ClassVar[arcade.SpriteList]
-    waypoints: ClassVar[tuple[Vector, ...]]
+    Implements the functionality of a enemy entity sprite.
+    """
+
+    # Define class attributes expected to be assigned
+    # NOTE: Class attributes expected to be assigned:
+    # sprite_list: ClassVar[arcade.SpriteList]
+    # waypoints: ClassVar[tuple[Vector, ...]]
     targets: ClassVar[arcade.SpriteList]
 
-    FILENAME: ClassVar[str]
-    HEALTH: ClassVar[int]
-    SPEED: ClassVar[float]
-    DROPS: ClassVar[Drops]
-
-    def __init__(self) -> None:
-        super().__init__(
-            filename=self.FILENAME,
-            health=self.HEALTH,
-            speed=self.SPEED,
-            waypoints=self.waypoints,
-        )
-
-        self.sprite_list.append(self)
+    # Define class constants expected to be override
+    # NOTE: Class constants expected to be override
+    # FILENAME: ClassVar[str]
+    # HEALTH: ClassVar[int]
+    # SPEED: ClassVar[float]
+    DROPS: ClassVar[tuple[type[coins.Coin], int]]
 
     def on_end(self) -> int:
+        """Event called when enemy reached end.
+
+        Returns:
+            int: The remaining health of enemy.
+        """
+
         self.on_die()
         return self.health
 
     def on_die(self) -> None:
+        """Event called when enemy dies."""
+
         super().on_die()
 
-        for _ in range(self.DROPS.amount):
-            self.DROPS.coin(self.xy)
+        # Drop the defined coin type & number of coins
+        coin, amount = self.DROPS
+        for _ in range(amount):
+            coin(self.xy)
 
 
-@final
+# Define Soldier enemy
 class Soldier(Enemy):
+    """`Soldier` enemy entity sprite object.
+
+    Inherited from `Enemy`.
+    """
+
     FILENAME = "./assets/Entities/Troops/Soldier.png"
     HEALTH = 10
     SPEED = 2
-    DROPS = Drops(particles.coins.Bronze, 1)
+    DROPS = (coins.Bronze, 2)
 
 
-@final
+# Define Zombie enemy
 class Zombie(Enemy):
+    """`Zombie` enemy entity sprite object.
+
+    Inherited from `Enemy`.
+    """
+
     FILENAME = "./assets/Entities/Troops/Zombie.png"
     HEALTH = 8
     SPEED = 3
-    DROPS = Drops(particles.coins.Bronze, 2)
+    DROPS = (coins.Bronze, 3)
 
 
-@final
+# Define Knight enemy
 class Knight(Enemy):
+    """`Knight` enemy entity sprite object.
+
+    Inherited from `Enemy`.
+    """
+
     FILENAME = "./assets/Entities/Troops/Knight.png"
-    HEALTH = 50
-    SPEED = 1
-    DROPS = Drops(particles.coins.Gold, 1)
-
-
-@final
-class Robot(Enemy):
-    FILENAME = "./assets/Entities/Troops/Robot.png"
     HEALTH = 35
+    SPEED = 1
+    DROPS = (coins.Gold, 1)
+
+
+# Define Robot enemy
+class Robot(Enemy):
+    """`Robot` enemy entity sprite object.
+
+    Inherited from `Enemy`.
+    """
+
+    FILENAME = "./assets/Entities/Troops/Robot.png"
+    HEALTH = 30
     SPEED = 2
-    DROPS = Drops(particles.coins.Gold, 2)
+    DROPS = (coins.Gold, 2)
 
 
-@final
-class Tank(Enemy):
+# Define Tank enemy
+class Tank(Enemy, tanks.Tank):
+    """`Tank` enemy entity sprite object.
+
+    Inherited from `Enemy` & `Tank`.
+    """
+
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
     HEALTH = 250
     SPEED = 1
-    DROPS = Drops(particles.coins.Gold, 5)
+    DROPS = (coins.Gold, 5)
 
+    CANON_FILENAME = "./assets/Entities/Vehicles/TankBigGun.png"
     FIRERATE = 2500
-    DAMAGE = 25
-    RANGE = 4 * 64
-
-    def __init__(self) -> None:
-        super().__init__()
-
-        self.turret: turrets.canons.TankCanon = turrets.canons.TankCanon(
-            filename="./assets/Entities/Vehicles/TankBigGun.png",
-            position=self.xy,
-            firerate=self.FIRERATE,
-            damage=self.DAMAGE,
-            range=self.RANGE,
-            targets=self.targets,
-        )
-        self.sprite_list.append(self.turret)
-        self.turret.face_point(self.movement.target.convert())
-
-    def update(self) -> None:
-        super().update()
-        self.turret.xy = self.xy
-
-        self.turret.update()
-        if not self.turret.target and self.turret.reload.available():
-            self.turret.face_point(self.movement.target.convert())
-
-    def on_hover_draw(self) -> None:
-        arcade.draw_circle_filled(
-            *self.xy.convert(), radius=self.RANGE, color=(0, 0, 0, 50)
-        )
-        super().on_hover_draw()
-
-    def on_die(self) -> None:
-        self.turret.kill()
-        super().on_die()
+    DAMAGE = 35
+    RANGE = 4 * TILE_SIZE
