@@ -104,8 +104,8 @@ class MachineGun(Tower):
     PRICE = 20
 
 
-# Define RocketLauncher tower
-class RocketLauncher(Tower):
+# Define Rocket tower
+class Rocket(Tower):
     """`RocketLauncher` tower turret sprite object.
 
     Inherited from `Tower`.
@@ -118,7 +118,7 @@ class RocketLauncher(Tower):
     PRICE = 60
 
     PROJECTILE_RADIUS = int(TILE_SIZE // 1.5)
-    PROJECTILE_SPEED = 3
+    PROJECTILE_SPEED = 8
 
     def attack(self) -> None:
         """Function called when rocket launcher attacks."""
@@ -136,3 +136,11 @@ class RocketLauncher(Tower):
             range=self.PROJECTILE_RADIUS,
             speed=self.PROJECTILE_SPEED,
         )
+
+
+# Define list of all towers mapped to button file
+towers: dict[type[Tower], str] = {
+    Rocket: "./assets/UI/Rocket.png",
+    Canon: "./assets/UI/Canon.png",
+    MachineGun: "./assets/UI/Gun.png",
+}

@@ -55,6 +55,9 @@ class Rocket(particles.Particle):
         self.RANGE: int = range
         self.DAMAGE: int = damage
 
+        # Rotate the rocket towards target
+        self.rotate(self.target)
+
     def explode(self) -> None:
         """Function called when rocket explodes."""
 
@@ -74,7 +77,7 @@ class Rocket(particles.Particle):
     def update(self) -> None:
         """The update functionality for rocket class."""
 
-        # Move towards the select target position
+        # Move & rotate towards the select target position
         self.move(self.target, self.SPEED)
 
         # Determine if rocket reached target position

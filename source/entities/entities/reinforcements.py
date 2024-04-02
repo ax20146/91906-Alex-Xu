@@ -111,3 +111,10 @@ class Tank(Reinforcement, tanks.Tank):
     FIRERATE = 2000
     DAMAGE = 10
     RANGE = 3 * TILE_SIZE
+
+
+# Define list of all reinforcements mapped to button file
+reinforcements: dict[type[Reinforcement], str] = {
+    Truck: "./assets/UI/Truck.png",
+    Tank: "./assets/UI/Tank.png",
+}

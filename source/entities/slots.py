@@ -58,8 +58,12 @@ class Slot(Sprite):
         if not self.tower:
             return 0
 
+        # Selling the tower & return the money
+        price = self.tower.PRICE // 2
         self.tower.kill()
-        return self.tower.PRICE // 2
+        self.tower = None
+
+        return price
 
     def on_hover_draw(self) -> None:
         """Event called when slot is hovered."""
