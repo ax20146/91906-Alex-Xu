@@ -78,12 +78,12 @@ class Gold(Coin):
     VALUE = 5
 
 
-# Define Bronze coin
-class Bronze(Coin):
-    """`Bronze` coin particle sprite object.
+# Define Silver coin
+class Silver(Coin):
+    """`Silver` coin particle sprite object.
 
     Inherited from `Coin`.
     """
 
-    FILENAME = "./assets/Entities/Coins/Bronze.png"
+    FILENAME = "./assets/Entities/Coins/Silver.png"
     VALUE = 1
