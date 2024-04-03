@@ -177,8 +177,15 @@ class Game(View):
         self.scene.draw()  # type: ignore
 
         # Draw the mouse hovered sprites
-        if self.hover and isinstance(self.hover, (Entity, Slot, Button)):
+        if isinstance(self.hover, (Entity, Slot, Button)) and (
+            self.hover in self.scene[LAYER_SLOTS]
+            or self.hover in self.scene[LAYER_ENEMIES]
+            or self.hover in self.scene[LAYER_REINFORCEMENTS]
+            or self.hover in self.scene[LAYER_UI]
+        ):
             self.hover.on_hover_draw()
+        else:
+            self.hover = None
 
         # Draw the mouse selected sprites
         if isinstance(self.select, (Entity, Slot)) and (
