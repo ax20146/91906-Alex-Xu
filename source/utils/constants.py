@@ -44,8 +44,8 @@ ANCHOR_RIGHT = "right"
 BLACK = (21, 19, 21)
 GREY = (80, 80, 80)
 WHITE = (255, 255, 255)
-TRANSPARENT_DARK = (*BLACK, 180)
-TRANSPARENT_LIGHT = (*BLACK, 100)
+TRANSPARENT_DARK = (*BLACK, 150)
+TRANSPARENT_LIGHT = (*BLACK, 50)
 HEALTHBAR_COLOUR = (79, 189, 101)
 
 # Define Stat UI Constants
@@ -85,8 +85,10 @@ DEFAULT_DATA = {
 # Define Game Tips Constants
 TIPS_COOLDOWN = 2500
 TIPS_DATA = (
-    "Select an empty slot to place towers!",
+    "Select an empty slot to place defenses!",
     "Right click on a tower to sell!",
     "Reinforcements have cooldown timers!",
-    "Do you know the boss tanks drops 5 gold!",
+    "Do you know: The tank drops gold! Not very useful though.",
+    "Do you know: Rocket can one shot everything! "
+    + "But it's biggest weakness is fast enemy",
 )

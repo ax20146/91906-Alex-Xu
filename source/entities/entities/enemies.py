@@ -63,9 +63,9 @@ class Soldier(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Soldier.png"
-    HEALTH = 10
+    HEALTH = 12
     SPEED = 2
-    DROPS = (coins.Silver, 2)
+    DROPS = (coins.Silver, 1)
 
 
 # Define Zombie enemy
@@ -78,7 +78,7 @@ class Zombie(Enemy):
     FILENAME = "./assets/Entities/Troops/Zombie.png"
     HEALTH = 8
     SPEED = 3
-    DROPS = (coins.Silver, 3)
+    DROPS = (coins.Silver, 2)
 
 
 # Define Knight enemy
@@ -89,7 +89,7 @@ class Knight(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Knight.png"
-    HEALTH = 35
+    HEALTH = 20
     SPEED = 1
     DROPS = (coins.Gold, 1)
 
@@ -102,7 +102,7 @@ class Robot(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Robot.png"
-    HEALTH = 30
+    HEALTH = 18
     SPEED = 2
     DROPS = (coins.Gold, 2)
 

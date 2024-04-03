@@ -34,7 +34,7 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     """
 
     # Wave 0 Data
-    yield ("Wave 0", 20)
+    yield ("Wave 0", 35)
     yield 5000
 
     # Wave 1 Data
