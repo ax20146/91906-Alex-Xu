@@ -71,7 +71,10 @@ class Canon(turrets.Turret):
         flames.SmallFlame(
             position,
             self.angle,
-            min(self.FIRERATE // 2, self.PARTICLE_LIFETIME),
+            min(
+                self.FIRERATE // self.PARTICLE_LIFETIME_RATIO,
+                self.PARTICLE_LIFETIME,
+            ),
         )
 
 

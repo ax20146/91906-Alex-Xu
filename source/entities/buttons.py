@@ -11,6 +11,7 @@ from ..utils.constants import (
     ANCHOR_CENTER,
     FONT,
     FONT_MEDIUM,
+    MINIMUM_COIN,
     TRANSPARENT_LIGHT,
     WHITE,
 )
@@ -32,10 +33,11 @@ class Button(Sprite):
     # Define class constants
     DISABLED_ALPHA = 100
     ENABLED_ALPHA = 255
+    HEIGHT_RATIO = 3
 
     # Define class attributes expected to be assigned
     selected: ClassVar[Sprite | None] = None
-    coin: ClassVar[int] = 0
+    coin: ClassVar[int] = MINIMUM_COIN
 
     def __init__(
         self,
@@ -131,7 +133,7 @@ class Button(Sprite):
             self.timer.update()
             return self.entity.PRICE
 
-        return 0
+        return MINIMUM_COIN
 
     def on_hover_draw(self) -> None:
         """Event called when button is hovered."""
@@ -164,7 +166,7 @@ class Button(Sprite):
         arcade.draw_text(
             f"${self.entity.PRICE}",
             self.x,
-            self.y - self.height // 3,
+            self.y - self.height // self.HEIGHT_RATIO,
             font_name=FONT,
             font_size=FONT_MEDIUM,
             anchor_x=ANCHOR_CENTER,

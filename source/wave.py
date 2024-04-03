@@ -11,11 +11,17 @@ from .entities.entities.enemies import (
     Tank,
     Zombie,
 )
-from .utils.types import Iterator
+from .utils.types import Iterator, NamedTuple
+
+
+# Define Wave data structure.
+class Wave(NamedTuple):
+    display: str
+    coin: int
 
 
 # Define Wave generator function
-def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
+def wave() -> Iterator[type[Enemy] | Wave | int]:
     """`Wave` generator function.
     Yield different information regarding waves.
 
@@ -34,32 +40,32 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     """
 
     # Wave 0 Data
-    yield ("Wave 0", 35)
+    yield Wave("Wave 0", 35)
     yield 5000
 
     # Wave 1 Data
-    yield ("Wave 1", 5)
+    yield Wave("Wave 1", 5)
     for _ in range(3):
         yield Soldier
         yield 1000
     yield 4000
 
     # Wave 2 Data
-    yield ("Wave 2", 25)
+    yield Wave("Wave 2", 25)
     for _ in range(8):
         yield Soldier
         yield 1000
     yield 4000
 
     # Wave 3 Data
-    yield ("Wave 3", 30)
+    yield Wave("Wave 3", 30)
     for _ in range(5):
         yield Zombie
         yield 400
     yield 4600
 
     # Wave 4 Data
-    yield ("Wave 4", 35)
+    yield Wave("Wave 4", 35)
     for _ in range(5):
         yield Zombie
         yield 500
@@ -69,14 +75,14 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     yield 4200
 
     # Wave 5 Data
-    yield ("Wave 5", 40)
+    yield Wave("Wave 5", 40)
     for _ in range(8):
         yield Knight
         yield 1500
     yield 6500
 
     # Wave 6 Data
-    yield ("Wave 6", 50)
+    yield Wave("Wave 6", 50)
     for _ in range(10):
         yield Soldier
         yield 1000
@@ -86,7 +92,7 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     yield 7000
 
     # Wave 7 Data
-    yield ("Wave 7", 60)
+    yield Wave("Wave 7", 60)
     for _ in range(15):
         yield Zombie
         yield 250
@@ -99,7 +105,7 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     yield 7200
 
     # Wave 8 Data
-    yield ("Wave 8", 80)
+    yield Wave("Wave 8", 80)
     for _ in range(25):
         yield Zombie
         yield 500
@@ -112,7 +118,7 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     yield 9000
 
     # Wave 9 Data
-    yield ("Wave 9", 100)
+    yield Wave("Wave 9", 100)
     for _ in range(20):
         yield Robot
         yield 1200
@@ -122,7 +128,7 @@ def wave() -> Iterator[type[Enemy] | tuple[str, int] | int]:
     yield 9200
 
     # Wave 10 Data
-    yield ("Wave 10", 120)
+    yield Wave("Wave 10", 120)
     for _ in range(50):
         yield Soldier
         yield 500

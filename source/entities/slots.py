@@ -12,6 +12,7 @@ from ..utils.constants import (
     BLACK,
     FONT,
     FONT_SMALL,
+    MINIMUM_COIN,
     STAT_UI_LARGE_HEIGHT,
     STAT_UI_OFFSET,
     STAT_UI_OUTLINE,
@@ -34,6 +35,7 @@ class Slot(Sprite):
 
     # Define class constants
     FILENAME = "./assets/Entities/Slot.png"
+    SELL_RATE = 0.75
 
     def __init__(self, position: Vector) -> None:
         """Initialise a `Slot` sprite object.
@@ -56,10 +58,10 @@ class Slot(Sprite):
         """
 
         if not self.tower:
-            return 0
+            return MINIMUM_COIN
 
         # Selling the tower & return the money
-        price = self.tower.PRICE // 2
+        price = int(self.tower.PRICE * self.SELL_RATE)
         self.tower.kill()
         self.tower = None
 

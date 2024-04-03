@@ -3,7 +3,7 @@
 
 
 # Import Built-in Dependencies
-from typing import Any, Callable, ClassVar, Iterator, TypeVar
+from typing import Any, Callable, ClassVar, Iterator, NamedTuple, TypeVar
 
 # Export Local Types
 __all__: list[str] = [
@@ -11,6 +11,7 @@ __all__: list[str] = [
     "ClassVar",
     "Callable",
     "Iterator",
+    "NamedTuple",
     "Type",
 ]
 

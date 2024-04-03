@@ -7,9 +7,15 @@ import arcade
 
 # Import Local Dependencies
 from ...utils.constants import TILE_SIZE
-from ...utils.types import ClassVar
+from ...utils.types import ClassVar, NamedTuple
 from ..particles import coins
 from . import entities, tanks
+
+
+# Define 'Drops' Data Structures
+class Drops(NamedTuple):
+    coin: type[coins.Coin]
+    amount: int
 
 
 # Define Enemy class
@@ -32,7 +38,7 @@ class Enemy(entities.Entity):
     # FILENAME: ClassVar[str]
     # HEALTH: ClassVar[int]
     # SPEED: ClassVar[float]
-    DROPS: ClassVar[tuple[type[coins.Coin], int]]
+    DROPS: ClassVar[Drops]
 
     def on_end(self) -> int:
         """Event called when enemy reached end.
@@ -50,9 +56,8 @@ class Enemy(entities.Entity):
         super().on_die()
 
         # Drop the defined coin type & number of coins
-        coin, amount = self.DROPS
-        for _ in range(amount):
-            coin(self.xy)
+        for _ in range(self.DROPS.amount):
+            self.DROPS.coin(self.xy)
 
 
 # Define Soldier enemy
@@ -65,7 +70,7 @@ class Soldier(Enemy):
     FILENAME = "./assets/Entities/Troops/Soldier.png"
     HEALTH = 12
     SPEED = 2
-    DROPS = (coins.Silver, 1)
+    DROPS = Drops(coins.Silver, 1)
 
 
 # Define Zombie enemy
@@ -78,7 +83,7 @@ class Zombie(Enemy):
     FILENAME = "./assets/Entities/Troops/Zombie.png"
     HEALTH = 8
     SPEED = 3
-    DROPS = (coins.Silver, 2)
+    DROPS = Drops(coins.Silver, 2)
 
 
 # Define Knight enemy
@@ -91,7 +96,7 @@ class Knight(Enemy):
     FILENAME = "./assets/Entities/Troops/Knight.png"
     HEALTH = 20
     SPEED = 1
-    DROPS = (coins.Gold, 1)
+    DROPS = Drops(coins.Gold, 1)
 
 
 # Define Robot enemy
@@ -104,7 +109,7 @@ class Robot(Enemy):
     FILENAME = "./assets/Entities/Troops/Robot.png"
     HEALTH = 18
     SPEED = 2
-    DROPS = (coins.Gold, 2)
+    DROPS = Drops(coins.Gold, 2)
 
 
 # Define Tank enemy
@@ -117,7 +122,7 @@ class Tank(Enemy, tanks.Tank):
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
     HEALTH = 250
     SPEED = 1
-    DROPS = (coins.Gold, 5)
+    DROPS = Drops(coins.Gold, 5)
 
     CANON_FILENAME = "./assets/Entities/Vehicles/TankBigGun.png"
     FIRERATE = 2500

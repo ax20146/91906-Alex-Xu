@@ -73,6 +73,8 @@ INFO_UI_HALF_H = INFO_UI_FULL_H // 2
 # Define Game Constants
 # Define Initial Gameplay Constants
 GAMEPLAY_HEALTH = 100
+MINIMUM_HEALTH = 0
+MINIMUM_COIN = 0
 
 # Define Game Data Constants
 DATA_PATH = "./data.json"

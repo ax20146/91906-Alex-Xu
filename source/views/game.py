@@ -38,17 +38,26 @@ from ..utils.constants import (
     LAYER_TOWERS,
     LAYER_UI,
     LAYER_WAYPOINTS,
+    MINIMUM_COIN,
+    MINIMUM_HEALTH,
     SCREEN_HALF_W,
     SCREEN_HEIGHT,
     TILE_SIZE,
     TRANSPARENT_DARK,
     WHITE,
 )
-from ..utils.types import Any, Iterator, Type
-from ..wave import wave
+from ..utils.types import Any, Iterator, NamedTuple, Type
+from ..wave import Wave, wave
 from . import endscreens
 
 
+# Define Map data structure
+class Map(NamedTuple):
+    name: str
+    tilemap: arcade.TileMap
+
+
+# Define Game class
 class Game(View):
     """`Game` object represents the main game view.
 
@@ -68,13 +77,13 @@ class Game(View):
         super().__init__()
 
         # Define tuple of map name & tilemap object
-        self.map: tuple[str, arcade.TileMap] = (
+        self.map: Map = Map(
             tilemap,
             arcade.load_tilemap(f"./maps/{tilemap}.tmx"),
         )
 
         # Define view's scene, clock, timer attributes
-        self.scene: arcade.Scene = arcade.Scene.from_tilemap(self.map[1])
+        self.scene: arcade.Scene = arcade.Scene.from_tilemap(self.map.tilemap)
         self.clock: Clock = Clock()
         self.timer: Timer = Timer(self.clock)
 
@@ -86,7 +95,7 @@ class Game(View):
         self.wave = wave()
         self.health: int = GAMEPLAY_HEALTH
         self.display: str = ""
-        self.coin: int = 0
+        self.coin: int = MINIMUM_COIN
 
         # Process & setup the game
         self.process_locations()
@@ -105,10 +114,13 @@ class Game(View):
         Returns:
             Iterator[Vector]: The iterator containing all waypoints.
         """
+        WAYPOINT = 0
 
         return (
             Vector(*waypoint)
-            for waypoint in tilemap.object_lists[LAYER_WAYPOINTS][0].shape
+            for waypoint in (
+                tilemap.object_lists[LAYER_WAYPOINTS][WAYPOINT].shape
+            )
             if isinstance(waypoint, tuple)
         )
 
@@ -138,7 +150,7 @@ class Game(View):
         Sprite.clock = self.clock
 
         # Assign required data to all enemy entities
-        Enemy.waypoints = tuple(self.process_waypoints(self.map[1]))
+        Enemy.waypoints = tuple(self.process_waypoints(self.map.tilemap))
         Enemy.sprite_list = self.scene[LAYER_ENEMIES]
         Enemy.targets = self.scene[LAYER_REINFORCEMENTS]
 
@@ -158,12 +170,12 @@ class Game(View):
     def setup_ui(self) -> None:
         """Setup the button UI sprites of the game."""
 
-        # Setup all the tower buttons
+        # Setup all the tower buttons at particular location
         for idx, (obj, path) in enumerate(towers.items(), start=1):
             position = Vector(TILE_SIZE, TILE_SIZE * (9 * idx - 1) // 8)
             self.scene.add_sprite(LAYER_UI, Button(path, position, obj))
 
-        # Setup all the reinforcement button
+        # Setup all the reinforcement button  at particular location
         for idx, (obj, path) in enumerate(reinforcements.items(), start=2):
             position = Vector(TILE_SIZE * (9 * idx - 1) // 8, TILE_SIZE)
             self.scene.add_sprite(LAYER_UI, Button(path, position, obj))
@@ -223,14 +235,15 @@ class Game(View):
         arcade.draw_rectangle_filled(
             SCREEN_HALF_W,
             SCREEN_HEIGHT - INFO_UI_HALF_H,
-            width=(max(self.health, 0) / GAMEPLAY_HEALTH) * INFO_UI_WIDTH,
+            width=(max(self.health, MINIMUM_HEALTH) / GAMEPLAY_HEALTH)
+            * INFO_UI_WIDTH,
             height=INFO_UI_HEIGHT,
             color=HEALTHBAR_COLOUR,
         )
         arcade.draw_text(
-            f"{max(self.health, 0)} / {GAMEPLAY_HEALTH}",
+            f"{max(self.health, MINIMUM_HEALTH)} / {GAMEPLAY_HEALTH}",
             SCREEN_HALF_W,
-            SCREEN_HEIGHT - INFO_UI_HEIGHT // 2,
+            SCREEN_HEIGHT - INFO_UI_HALF_H,
             font_name=FONT,
             font_size=FONT_MEDIUM,
             anchor_x=ANCHOR_CENTER,
@@ -247,6 +260,7 @@ class Game(View):
         """
 
         # Calculate all the points of teh trapezium shape
+        RATIO = 2
         end_x = start_x + INFO_UI_SMALL_WIDTH
         start_y = SCREEN_HEIGHT - INFO_UI_FULL_H - INFO_UI_MARGIN
         end_y = start_y - INFO_UI_FULL_H
@@ -257,15 +271,15 @@ class Game(View):
             point_list=(
                 (start_x, start_y),
                 (end_x, start_y),
-                (end_x - INFO_UI_MARGIN * 4, end_y),
-                (start_x + INFO_UI_MARGIN * 4, end_y),
+                (end_x - INFO_UI_MARGIN * INFO_UI_MARGIN, end_y),
+                (start_x + INFO_UI_MARGIN * INFO_UI_MARGIN, end_y),
             ),
         )
 
         # Draw the text information displayed on the UI bar
         arcade.draw_text(
             text,
-            start_x=(start_x + end_x) // 2,
+            start_x=(start_x + end_x) // RATIO,
             start_y=start_y - INFO_UI_HALF_H,
             font_name=FONT,
             font_size=FONT_MEDIUM,
@@ -298,7 +312,7 @@ class Game(View):
         """Update the current game state (Win/Lose)."""
 
         # Determine whether the player lost & change view when lost
-        if self.health <= 0:
+        if self.health <= MINIMUM_HEALTH:
             self.on_draw()
             self.window.show_view(endscreens.Defeat())
             return
@@ -306,7 +320,7 @@ class Game(View):
         # Determine whether the player won & change views when won
         if self.timer.disable and not len(self.scene[LAYER_ENEMIES]):
             self.on_draw()
-            self.window.show_view(endscreens.Victory(self.map[0]))
+            self.window.show_view(endscreens.Victory(self.map.name))
             return
 
     def update_health(self) -> None:
@@ -342,9 +356,9 @@ class Game(View):
             return
 
         # Update the display text & player coin based on wave generator
-        if isinstance(wave_data, tuple):
-            self.display = wave_data[0]
-            self.coin += wave_data[1]
+        if isinstance(wave_data, Wave):
+            self.display = wave_data.display
+            self.coin += wave_data.coin
         else:
             wave_data()
 
@@ -474,6 +488,8 @@ class Game(View):
             given type at given position from given list.
             (None if it can't be found).
         """
+        TOP = -1
+        SECOND_TOP = -2
 
         # Filter all the sprite in the given list with correct type
         sprites: list[Type] = [
@@ -488,6 +504,6 @@ class Game(View):
 
         # Return the top most sprite, or second top most if the top
         # is tank canon to select the tank body instead
-        if isinstance(sprites[-1], Canon) and len(sprites) >= 2:
-            return sprites[-2]
-        return sprites[-1]
+        if isinstance(sprites[TOP], Canon) and len(sprites) >= -SECOND_TOP:
+            return sprites[SECOND_TOP]
+        return sprites[TOP]

@@ -24,8 +24,10 @@ class Turret(Sprite):
     targets: ClassVar[arcade.SpriteList]
 
     # Define class constants
+    RELOAD_RATIO = 3
     LENGTH_RATIO = 1.2
     PARTICLE_LIFETIME = 150
+    PARTICLE_LIFETIME_RATIO = 2
 
     # Define class constants expected to be override
     FILENAME: ClassVar[str]
@@ -49,7 +51,9 @@ class Turret(Sprite):
         # Define attributes of turret
         self.target: entities.Entity | None
         self.timer: Timer = Timer(self.clock, self.FIRERATE)
-        self.reload: Timer = Timer(self.clock, self.FIRERATE // 3)
+        self.reload: Timer = Timer(
+            self.clock, self.FIRERATE // self.RELOAD_RATIO
+        )
 
     def attack(self) -> None:
         """Function called when turret attacks."""

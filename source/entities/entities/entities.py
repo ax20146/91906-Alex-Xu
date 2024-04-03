@@ -15,6 +15,7 @@ from ...utils.constants import (
     FONT,
     FONT_SMALL,
     HEALTHBAR_COLOUR,
+    MINIMUM_HEALTH,
     STAT_UI_FULL_H,
     STAT_UI_FULL_W,
     STAT_UI_HALF_W,
@@ -73,7 +74,7 @@ class Entity(Sprite):
             bool: Whether the entity is dead.
         """
 
-        return self.health <= 0
+        return self.health <= MINIMUM_HEALTH
 
     def distance(self) -> float:
         """Calculate the distance to the entity's target.
@@ -103,7 +104,9 @@ class Entity(Sprite):
         arcade.draw_rectangle_filled(
             self.x,
             self.y + STAT_UI_OFFSET,
-            width=max(self.health, 0) / self.HEALTH * STAT_UI_WIDTH,
+            width=max(self.health, MINIMUM_HEALTH)
+            / self.HEALTH
+            * STAT_UI_WIDTH,
             height=STAT_UI_HEIGHT,
             color=HEALTHBAR_COLOUR,
         )
@@ -127,7 +130,7 @@ class Entity(Sprite):
             color=WHITE,
         )
         arcade.draw_text(
-            f"{max(self.health, 0)} / {self.HEALTH}",
+            f"{max(self.health, MINIMUM_HEALTH)} / {self.HEALTH}",
             self.x + STAT_UI_HALF_W,
             self.y + STAT_UI_LARGE_OFFSET,
             font_name=FONT,

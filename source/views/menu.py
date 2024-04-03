@@ -178,7 +178,8 @@ class Button(arcade.gui.UIFlatButton):
         *,
         args: str,
         disabled: bool = False,
-        size: tuple[int, int] = (250, 50),
+        width: int = 250,
+        height: int = 50,
     ) -> None:
         """Initialise a `Button` object.
 
@@ -189,8 +190,10 @@ class Button(arcade.gui.UIFlatButton):
             args (str): The arguments to the `on_click` function.
             disabled (bool, optional): Whether the button is disabled.
                 Defaults to False.
-            size (tuple[int, int], optional): The size of the button.
-                Defaults to (250, 50).
+            width (int, optional): The width of the button.
+                Defaults to 250.
+            height (int, optional): The width of the button.
+                Defaults to 50.
         """
 
         # Define the styles of the button
@@ -206,8 +209,8 @@ class Button(arcade.gui.UIFlatButton):
         # Initialised parent class
         super().__init__(  # type: ignore
             text=text,
-            width=size[0],
-            height=size[1],
+            width=width,
+            height=height,
             style=style,
         )
 
