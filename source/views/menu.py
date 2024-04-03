@@ -72,7 +72,7 @@ class Menu(View):
         )
 
         # Add the buttons to UI manager
-        self.ui.add(  # type: ignore
+        self.ui.add(
             arcade.gui.UIAnchorWidget(
                 child=arcade.gui.UIBoxLayout(children=buttons)
             )
@@ -108,7 +108,7 @@ class Menu(View):
 
         # Draw scene
         self.clear()
-        self.scene.draw()  # type: ignore
+        self.scene.draw()
 
         # Draw overlay shadow
         arcade.draw_rectangle_filled(
@@ -207,7 +207,7 @@ class Button(arcade.gui.UIFlatButton):
         }
 
         # Initialised parent class
-        super().__init__(  # type: ignore
+        super().__init__(
             text=text,
             width=width,
             height=height,

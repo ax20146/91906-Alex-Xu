@@ -186,7 +186,7 @@ class Game(View):
 
         # Draw all the sprites
         self.clear()
-        self.scene.draw()  # type: ignore
+        self.scene.draw()
 
         # Draw the mouse hovered sprites
         if isinstance(self.hover, (Entity, Slot, Button)) and (

@@ -24,7 +24,7 @@ def create_window() -> Window:
         Window: The game window.
     """
 
-    window: Window = Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)  # type: ignore
+    window: Window = Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window.show_view(Menu())
 
     return window
