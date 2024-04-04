@@ -155,13 +155,12 @@ class Entity(Sprite):
 
     def update(self) -> None:
         """The update functionality for entity class."""
-        super().update()
+
+        # Determine if entity should die
+        if self.is_dead():
+            return self.on_die()
 
         # Move, Rotate & Update the entity target
         self.move(self.waypoints[self.target_idx], self.SPEED)
         self.rotate(self.waypoints[self.target_idx])
         self.update_target()
-
-        # Determine if entity should die
-        if self.is_dead():
-            self.on_die()

@@ -301,9 +301,9 @@ class Game(View):
         self.scene.update()
 
         # Update the various aspect of the game
+        self.update_health()
         self.update_state()
         self.update_wave()
-        self.update_health()
 
         # Update the button class with current game state
         Button.update_data(self.coin, self.select)

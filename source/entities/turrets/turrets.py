@@ -91,7 +91,6 @@ class Turret(Sprite):
 
     def update(self) -> None:
         """The update functionality for turret class."""
-        super().update()
 
         # Determine if turret finished reloading and has a target
         self.update_target()

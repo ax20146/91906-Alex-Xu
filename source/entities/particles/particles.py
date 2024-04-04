@@ -50,7 +50,6 @@ class Particle(Sprite):
 
     def update(self) -> None:
         """The update functionality for particle class."""
-        super().update()
 
         # Kill particle when its lifetime is over
         if self.timer.available():
