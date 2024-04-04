@@ -90,7 +90,9 @@ TIPS_DATA = (
     "Select an empty slot to place defenses!",
     "Right click on a tower to sell!",
     "Reinforcements have cooldown timers!",
-    "Do you know: The tank drops gold! Not very useful though.",
-    "Do you know: Rocket can one shot everything! "
-    + "But it's biggest weakness is fast enemy",
+    "Do you know: The tank boss drops gold? Not very useful though.",
+    "Do you know: Rocket can one shot almost everything?"
+    "Do you know: The silver coin used to be bronze?",
+    "Do you know: Rocket does splash damage? Like a real rocket!",
+    "Do you know: Reinforcement tank is more powerful than rocket?",
 )
