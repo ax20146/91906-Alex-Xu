@@ -87,10 +87,10 @@ class Canon(Tower):
     """
 
     FILENAME = "./assets/Entities/Towers/Canon.png"
-    FIRERATE = 2000
-    DAMAGE = 20
+    FIRERATE = 1000
+    DAMAGE = 4
     RANGE = 4 * TILE_SIZE
-    PRICE = 35
+    PRICE = 20
 
 
 # Define MachineGun tower
@@ -104,7 +104,7 @@ class MachineGun(Tower):
     FIRERATE = 150
     DAMAGE = 1
     RANGE = 3 * TILE_SIZE
-    PRICE = 20
+    PRICE = 45
 
 
 # Define Rocket tower
@@ -115,12 +115,12 @@ class Rocket(Tower):
     """
 
     FILENAME = "./assets/Entities/Towers/Rocket.png"
-    FIRERATE = 3000
-    DAMAGE = 25
-    RANGE = 4 * TILE_SIZE
-    PRICE = 60
+    FIRERATE = 2000
+    DAMAGE = 20
+    RANGE = int(3.5 * TILE_SIZE)
+    PRICE = 120
 
-    PROJECTILE_RADIUS = int(TILE_SIZE // 1.5)
+    PROJECTILE_RADIUS = int(TILE_SIZE // 1.2)
     PROJECTILE_SPEED = 8
 
     def attack(self) -> None:
@@ -144,6 +144,6 @@ class Rocket(Tower):
 # Define list of all towers mapped to button file
 towers: dict[type[Tower], str] = {
     Rocket: "./assets/UI/Rocket.png",
-    Canon: "./assets/UI/Canon.png",
     MachineGun: "./assets/UI/Gun.png",
+    Canon: "./assets/UI/Canon.png",
 }

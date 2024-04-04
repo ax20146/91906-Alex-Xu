@@ -70,14 +70,15 @@ class Reinforcement(entities.Entity):
 
     def update(self) -> None:
         """The update functionality for reinforcement class."""
+        # Determine if reinforcement entity should die
+        if self.is_end() or self.is_dead():
+            return self.on_die()
+
+        # Call parent 'update' method
         super().update()
 
         # Check for collision with enemies
         self.on_collide()
-
-        # Determine if reinforcement entity should die
-        if self.is_end() or self.is_dead():
-            self.on_die()
 
 
 # Define Truck reinforcement
@@ -88,10 +89,10 @@ class Truck(Reinforcement):
     """
 
     FILENAME = "./assets/Entities/Vehicles/TankSmall.png"
-    HEALTH = 40
+    HEALTH = 50
     SPEED = 2
-    PRICE = 45
-    COOLDOWN = 5000
+    PRICE = 40
+    COOLDOWN = 3500
 
 
 # Define Tank reinforcement
@@ -104,13 +105,13 @@ class Tank(Reinforcement, tanks.Tank):
     FILENAME = "./assets/Entities/Vehicles/TankSmall.png"
     HEALTH = 75
     SPEED = 1
-    PRICE = 80
-    COOLDOWN = 10000
+    PRICE = 120
+    COOLDOWN = 7500
 
     CANON_FILENAME = "./assets/Entities/Vehicles/TankSmallGun.png"
-    FIRERATE = 2000
-    DAMAGE = 10
-    RANGE = 3 * TILE_SIZE
+    FIRERATE = 1000
+    DAMAGE = 12
+    RANGE = int(3.5 * TILE_SIZE)
 
 
 # Define list of all reinforcements mapped to button file

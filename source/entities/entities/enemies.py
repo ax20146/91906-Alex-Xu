@@ -68,7 +68,7 @@ class Soldier(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Soldier.png"
-    HEALTH = 12
+    HEALTH = 8
     SPEED = 2
     DROPS = Drops(coins.Silver, 1)
 
@@ -81,7 +81,7 @@ class Zombie(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Zombie.png"
-    HEALTH = 8
+    HEALTH = 4
     SPEED = 3
     DROPS = Drops(coins.Silver, 2)
 
@@ -94,7 +94,7 @@ class Knight(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Knight.png"
-    HEALTH = 20
+    HEALTH = 24
     SPEED = 1
     DROPS = Drops(coins.Gold, 1)
 
@@ -107,7 +107,7 @@ class Robot(Enemy):
     """
 
     FILENAME = "./assets/Entities/Troops/Robot.png"
-    HEALTH = 18
+    HEALTH = 20
     SPEED = 2
     DROPS = Drops(coins.Gold, 2)
 
@@ -120,11 +120,11 @@ class Tank(Enemy, tanks.Tank):
     """
 
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
-    HEALTH = 250
+    HEALTH = 240
     SPEED = 1
     DROPS = Drops(coins.Gold, 5)
 
     CANON_FILENAME = "./assets/Entities/Vehicles/TankBigGun.png"
-    FIRERATE = 2500
-    DAMAGE = 35
-    RANGE = 4 * TILE_SIZE
+    FIRERATE = 1800
+    DAMAGE = 40
+    RANGE = 5 * TILE_SIZE
