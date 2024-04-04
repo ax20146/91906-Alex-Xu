@@ -70,12 +70,11 @@ class Reinforcement(entities.Entity):
 
     def update(self) -> None:
         """The update functionality for reinforcement class."""
+        super().update()
+
         # Determine if reinforcement entity should die
         if self.is_end() or self.is_dead():
             return self.on_die()
-
-        # Call parent 'update' method
-        super().update()
 
         # Check for collision with enemies
         self.on_collide()

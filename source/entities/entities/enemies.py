@@ -109,7 +109,7 @@ class Robot(Enemy):
     FILENAME = "./assets/Entities/Troops/Robot.png"
     HEALTH = 20
     SPEED = 2
-    DROPS = Drops(coins.Gold, 2)
+    DROPS = Drops(coins.Gold, 1)
 
 
 # Define Tank enemy
@@ -122,7 +122,7 @@ class Tank(Enemy, tanks.Tank):
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
     HEALTH = 240
     SPEED = 1
-    DROPS = Drops(coins.Gold, 5)
+    DROPS = Drops(coins.Gold, 2)
 
     CANON_FILENAME = "./assets/Entities/Vehicles/TankBigGun.png"
     FIRERATE = 1800
