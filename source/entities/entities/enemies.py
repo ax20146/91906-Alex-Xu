@@ -120,7 +120,7 @@ class Tank(Enemy, tanks.Tank):
     """
 
     FILENAME = "./assets/Entities/Vehicles/TankBig.png"
-    HEALTH = 240
+    HEALTH = 200
     SPEED = 1
     DROPS = Drops(coins.Gold, 2)
 

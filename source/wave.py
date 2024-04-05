@@ -132,11 +132,7 @@ def wave() -> Iterator[type[Enemy] | Wave | int]:
     for _ in range(20):
         yield Robot
         yield 1000
-    for _ in range(25):
+    for _ in range(30):
         yield Soldier
         yield 500
     yield Tank
-    yield 1500
-    for _ in range(20):
-        yield Knight
-        yield 1200

@@ -58,6 +58,9 @@ class Entity(Sprite):
         self.target_idx: int = 1
         self.health: int = self.HEALTH
 
+        # Rotate towards first waypoint
+        self.rotate(self.waypoints[self.target_idx])
+
     def is_end(self) -> bool:
         """Determine whether the entity reached end of path.
 
