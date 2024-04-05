@@ -154,8 +154,7 @@ class Tank(entities.Entity):
 
     def on_die(self) -> None:
         """Event called when tank dies."""
+        super().on_die()
 
         # Kill the tank canon
         self.canon.kill()
-
-        super().on_die()

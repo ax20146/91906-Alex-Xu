@@ -64,8 +64,8 @@ class Reinforcement(entities.Entity):
         target: enemies.Enemy = sprites[0]
 
         # Deal damage & take damage to & from target
-        damage: int = target.health
-        target.health -= self.health
+        damage: int = max(target.health, 0)
+        target.health -= max(self.health, 0)
         self.health -= damage
 
     def update(self) -> None:
