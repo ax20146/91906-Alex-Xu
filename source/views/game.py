@@ -259,7 +259,7 @@ class Game(View):
             start_x (int): The starting position of the information UI.
         """
 
-        # Calculate all the points of teh trapezium shape
+        # Calculate all the points of the trapezium shape
         RATIO = 2
         end_x = start_x + INFO_UI_SMALL_WIDTH
         start_y = SCREEN_HEIGHT - INFO_UI_FULL_H - INFO_UI_MARGIN
