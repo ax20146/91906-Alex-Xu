@@ -13,6 +13,7 @@ A simple tower defense game! Place defense on map specific slots and call in rei
 -   Linux: `python -m pip install -r requirements.txt`.
 -   Windows: Same as Linux.
 -   MacOS: I have no idea.
+
 If above steps still failed, ensure you have [Python](https://www.python.org/) & [Pip](https://pip.pypa.io/en/stable/#) installed correctly.
 
 ### Graphical Interface
